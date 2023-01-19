@@ -1,4 +1,6 @@
-# AKS Terraform
+# AKS cluster with new VNET
+
+Public AKS cluster with Azure CNI
 
 # Deploy the cluster
 

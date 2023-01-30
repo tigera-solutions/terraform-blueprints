@@ -40,7 +40,7 @@ variable "nodepool_nodes_count" {
 
 variable "nodepool_vm_size" {
   description = "Default nodepool VM size"
-  default     = "Standard_D2_v2"
+  default     = "Standard_B2ms"
 }
 
 variable "network_dns_service_ip" {

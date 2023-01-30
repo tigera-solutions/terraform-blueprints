@@ -5,7 +5,7 @@ variable "location" {
 
 variable "vnet_resource_group_name" {
   description = "The resource group name to be created"
-  default     = "aks-demo"
+  default     = "aks-cluster-with-new-vnet"
 }
 
 variable "admin_username" {

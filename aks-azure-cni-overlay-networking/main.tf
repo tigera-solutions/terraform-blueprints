@@ -10,16 +10,6 @@ terraform {
 
 provider "azurerm" {
   features {}
-  skip_provider_registration = true
-}
-
-resource "azurerm_resource_provider_registration" "overlay" {
-  name = "Microsoft.ContainerService"
-
-  feature {
-    name       = "AzureOverlayPreview"
-    registered = true
-  }
 }
 
 resource "azurerm_resource_group" "vnet" {
@@ -75,7 +65,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
 
   network_profile {
     network_plugin      = "azure"
-    network_plugin_mode = "overlay"
+    network_plugin_mode = "Overlay"
     service_cidr        = var.network_service_cidr
     dns_service_ip      = var.network_dns_service_ip
     docker_bridge_cidr  = var.network_docker_bridge_cidr

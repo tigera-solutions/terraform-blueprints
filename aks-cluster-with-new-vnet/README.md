@@ -1,4 +1,4 @@
-# AKS cluster with new VNET
+# AKS Cluster With New VNET
 
 Public AKS cluster with Azure CNI
 
@@ -7,7 +7,3 @@ Public AKS cluster with Azure CNI
 `terraform init`
 
 `terraform apply`
-
-`az login`
-
-`az aks get-credentials --name aks --resource-group demo-aks`

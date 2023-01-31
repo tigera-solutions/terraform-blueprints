@@ -5,7 +5,7 @@ variable "location" {
 
 variable "vnet_resource_group_name" {
   description = "The resource group name to be created"
-  default     = "byo-cni-with-custom-networking"
+  default     = "aks-azure-cni-overlay-networking"
 }
 
 variable "admin_username" {
@@ -25,7 +25,7 @@ variable "aks_vnet_name" {
 
 variable "cluster_name" {
   description = "AKS cluster name"
-  default     = "aks-byo-cni"
+  default     = "aks-azure-cni-overlay"
 }
 
 variable "kube_version_prefix" {

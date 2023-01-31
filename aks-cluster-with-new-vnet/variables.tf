@@ -25,7 +25,7 @@ variable "aks_vnet_name" {
 
 variable "cluster_name" {
   description = "AKS cluster name"
-  default     = "aks"
+  default     = "aks-azure-cni-with-calico"
 }
 
 variable "kube_version_prefix" {

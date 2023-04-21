@@ -30,7 +30,7 @@ variable "cluster_name" {
 
 variable "kube_version_prefix" {
   description = "AKS Kubernetes version prefix. Formatted '[Major].[Minor]' like '1.18'. Patch version part (as in '[Major].[Minor].[Patch]') will be set to latest automatically."
-  default     = "1.23"
+  default     = "1.24"
 }
 
 variable "nodepool_nodes_count" {

@@ -2,11 +2,6 @@
 
 This example demonstrates how to provision an EKS cluster using the Calico CNI with custom networking.
 
-This example solution provides:
-
-- AWS EKS Cluster (control plane)
-- AWS EKS managed addons coredns, kube-proxy and calico.
-
 ## Prerequisites:
 
 First, ensure that you have installed the following tools locally.
@@ -21,8 +16,6 @@ To provision this example:
 
 ```sh
 terraform init
-terraform apply -target module.vpc
-terraform apply -target module.eks
 terraform apply
 ```
 
@@ -86,7 +79,5 @@ ip-10-0-191-7.ec2.internal     Ready    <none>   10m   v1.24.10-eks-48e63af
 To teardown and remove the resources created in this example:
 
 ```sh
-terraform destroy -target="module.eks_blueprints_kubernetes_addons" -auto-approve
-terraform destroy -target="module.eks" -auto-approve
 terraform destroy -auto-approve
 ```

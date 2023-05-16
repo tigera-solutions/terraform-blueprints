@@ -40,9 +40,9 @@ locals {
   vpc_cidr           = var.vpc_cidr
   secondary_vpc_cidr = var.secondary_vpc_cidr
   azs                = slice(data.aws_availability_zones.available.names, 0, 2)
-  desiredSize        = 4
-  cluster_version    = "1.24"
-  pod_cidr           = "10.244.0.0/16"
+  desired_size        = var.desired_size
+  cluster_version    = var.cluster_version
+  pod_cidr           = var.pod_cidr
   calico_encap       = "VXLAN"
 
   kubeconfig = yamlencode({
@@ -149,7 +149,7 @@ resource "aws_iam_policy" "additional" {
 
 resource "null_resource" "scale_up_node_group" {
   provisioner "local-exec" {
-    command = "aws eks update-nodegroup-config --cluster-name ${split(":", module.eks.eks_managed_node_groups.calico.node_group_id)[0]} --nodegroup-name ${split(":", module.eks.eks_managed_node_groups.calico.node_group_id)[1]} --scaling-config desiredSize=${local.desiredSize}"
+    command = "aws eks update-nodegroup-config --cluster-name ${split(":", module.eks.eks_managed_node_groups.calico.node_group_id)[0]} --nodegroup-name ${split(":", module.eks.eks_managed_node_groups.calico.node_group_id)[1]} --scaling-config desiredSize=${local.desired_size}"
   }
 
   depends_on = [

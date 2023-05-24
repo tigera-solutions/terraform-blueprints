@@ -10,7 +10,7 @@ provider "kubernetes" {
     api_version = "client.authentication.k8s.io/v1beta1"
     command     = "aws"
     # This requires the awscli to be installed locally where Terraform is executed
-    args = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
+    args = ["eks", "get-token", "--cluster-name", local.name]
   }
 }
 
@@ -23,7 +23,7 @@ provider "helm" {
       api_version = "client.authentication.k8s.io/v1beta1"
       command     = "aws"
       # This requires the awscli to be installed locally where Terraform is executed
-      args = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
+      args = ["eks", "get-token", "--cluster-name", local.name]
     }
   }
 }
@@ -40,7 +40,7 @@ locals {
   vpc_cidr           = var.vpc_cidr
   secondary_vpc_cidr = var.secondary_vpc_cidr
   azs                = slice(data.aws_availability_zones.available.names, 0, 2)
-  desired_size        = var.desired_size
+  desired_size       = var.desired_size
   cluster_version    = var.cluster_version
   pod_cidr           = var.pod_cidr
   calico_encap       = "VXLAN"
@@ -50,7 +50,7 @@ locals {
     kind            = "Config"
     current-context = "terraform"
     clusters = [{
-      name = module.eks.cluster_name
+      name = var.name
       cluster = {
         certificate-authority-data = module.eks.cluster_certificate_authority_data
         server                     = module.eks.cluster_endpoint
@@ -59,7 +59,7 @@ locals {
     contexts = [{
       name = "terraform"
       context = {
-        cluster = module.eks.cluster_name
+        cluster = var.name
         user    = "terraform"
       }
     }]
@@ -212,7 +212,7 @@ resource "null_resource" "remove_finalizers" {
   provisioner "local-exec" {
     when        = destroy
     interpreter = ["/bin/bash", "-c"]
-    command = "kubectl delete installations.operator.tigera.io default"
+    command     = "kubectl delete installations.operator.tigera.io default"
   }
 
   triggers = {

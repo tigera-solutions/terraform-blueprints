@@ -1,3 +1,3 @@
-# terraform-azure-aks-blueprints
+# terraform-blueprints
 
-Collection of Azure AKS Reference Architectures in Terraform
+Collection of Reference Architectures in Terraform

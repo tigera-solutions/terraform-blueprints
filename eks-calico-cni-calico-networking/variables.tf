@@ -34,10 +34,16 @@ variable "pod_cidr" {
   default     = "10.244.0.0/16"
 }
 
+variable "cluster_service_ipv4_cidr" {
+  description = "Kubernetes Service CIDR"
+  type        = string
+  default     = "10.9.0.0/16"
+}
+
 variable "cluster_version" {
   description = "Kubernetes version for this cluster"
   type        = string
-  default     = "1.24"
+  default     = "1.25"
 }
 
 variable "desired_size" {

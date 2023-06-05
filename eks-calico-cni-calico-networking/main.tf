@@ -35,15 +35,16 @@ data "aws_eks_cluster_auth" "this" {
 data "aws_availability_zones" "available" {}
 
 locals {
-  name               = var.name
-  region             = var.region
-  vpc_cidr           = var.vpc_cidr
-  secondary_vpc_cidr = var.secondary_vpc_cidr
-  azs                = slice(data.aws_availability_zones.available.names, 0, 2)
-  desired_size       = var.desired_size
-  cluster_version    = var.cluster_version
-  pod_cidr           = var.pod_cidr
-  calico_encap       = "VXLAN"
+  name                      = var.name
+  region                    = var.region
+  vpc_cidr                  = var.vpc_cidr
+  secondary_vpc_cidr        = var.secondary_vpc_cidr
+  cluster_service_ipv4_cidr = var.cluster_service_ipv4_cidr
+  azs                       = slice(data.aws_availability_zones.available.names, 0, 2)
+  desired_size              = var.desired_size
+  cluster_version           = var.cluster_version
+  pod_cidr                  = var.pod_cidr
+  calico_encap              = "VXLAN"
 
   kubeconfig = yamlencode({
     apiVersion      = "v1"
@@ -86,8 +87,9 @@ module "eks" {
   cluster_version                = local.cluster_version
   cluster_endpoint_public_access = true
 
-  vpc_id     = module.vpc.vpc_id
-  subnet_ids = slice(module.vpc.private_subnets, 0, 2)
+  vpc_id                    = module.vpc.vpc_id
+  subnet_ids                = slice(module.vpc.private_subnets, 0, 2)
+  cluster_service_ipv4_cidr = local.cluster_service_ipv4_cidr
 
   eks_managed_node_groups = {
     calico = {

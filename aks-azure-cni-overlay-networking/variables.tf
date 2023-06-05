@@ -30,7 +30,7 @@ variable "cluster_name" {
 
 variable "kube_version_prefix" {
   description = "AKS Kubernetes version prefix. Formatted '[Major].[Minor]' like '1.18'. Patch version part (as in '[Major].[Minor].[Patch]') will be set to latest automatically."
-  default     = "1.23"
+  default     = "1.25"
 }
 
 variable "nodepool_nodes_count" {
@@ -50,7 +50,7 @@ variable "network_dns_service_ip" {
 
 variable "network_service_cidr" {
   description = "CNI service cidr"
-  default     = "10.9.0.0/24"
+  default     = "10.9.0.0/16"
 }
 
 variable "network_docker_bridge_cidr" {

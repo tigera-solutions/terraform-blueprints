@@ -5,6 +5,32 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "~> 3.21.1"
     }
+    helm = {
+      source  = "hashicorp/helm"
+      version = ">= 2.10.1"
+    }
+  }
+}
+
+data "azurerm_kubernetes_cluster" "credentials" {
+  depends_on          = [azurerm_kubernetes_cluster.aks]
+  name                = var.cluster_name
+  resource_group_name = var.cluster_name
+}
+
+provider "kubernetes" {
+  host                   = data.azurerm_kubernetes_cluster.credentials.kube_config.0.host
+  client_certificate     = base64decode(data.azurerm_kubernetes_cluster.credentials.kube_config.0.client_certificate)
+  client_key             = base64decode(data.azurerm_kubernetes_cluster.credentials.kube_config.0.client_key)
+  cluster_ca_certificate = base64decode(data.azurerm_kubernetes_cluster.credentials.kube_config.0.cluster_ca_certificate)
+}
+
+provider "helm" {
+  kubernetes {
+    host                   = data.azurerm_kubernetes_cluster.credentials.kube_config.0.host
+    client_certificate     = base64decode(data.azurerm_kubernetes_cluster.credentials.kube_config.0.client_certificate)
+    client_key             = base64decode(data.azurerm_kubernetes_cluster.credentials.kube_config.0.client_key)
+    cluster_ca_certificate = base64decode(data.azurerm_kubernetes_cluster.credentials.kube_config.0.cluster_ca_certificate)
   }
 }
 
@@ -75,4 +101,49 @@ resource "azurerm_role_assignment" "netcontributor" {
   role_definition_name = "Network Contributor"
   scope                = module.aks_network.subnet_ids["aks-subnet"]
   principal_id         = azurerm_kubernetes_cluster.aks.identity[0].principal_id
+}
+
+resource "kubernetes_namespace" "tigera_operator" {
+  metadata {
+    name = "tigera-operator"
+  }
+}
+
+resource "kubernetes_namespace" "calico_system" {
+  metadata {
+    name = "calico-system"
+  }
+}
+
+resource "helm_release" "calico" {
+  name       = "calico"
+  chart      = "tigera-operator"
+  repository = "https://docs.projectcalico.org/charts"
+  version    = "v3.25.1"
+  namespace  = "tigera-operator"
+  values = [templatefile("${path.module}/helm_values/values-calico.yaml", {
+    pod_cidr = "${var.cluster_pod_cidr}"
+  })]
+
+  depends_on = [
+    azurerm_kubernetes_cluster.aks,
+    kubernetes_namespace.tigera_operator,
+    kubernetes_namespace.calico_system,
+  ]
+}
+
+resource "null_resource" "remove_finalizers" {
+  provisioner "local-exec" {
+    when        = destroy
+    interpreter = ["/bin/bash", "-c"]
+    command     = "kubectl delete installations.operator.tigera.io default"
+  }
+
+  triggers = {
+    helm_tigera = helm_release.calico.status
+  }
+
+  depends_on = [
+    helm_release.calico
+  ]
 }

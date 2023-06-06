@@ -2,8 +2,10 @@ installation:
   kubernetesProvider: AKS
   cni:
     type: Calico
+    ipam:
+      type: Calico
   calicoNetwork:
     bgp: Disabled
     ipPools:
-    - cidr: 10.244.0.0/24
+    - cidr: ${pod_cidr}
       encapsulation: VXLAN

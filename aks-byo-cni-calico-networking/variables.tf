@@ -53,6 +53,11 @@ variable "network_service_cidr" {
   default     = "10.9.0.0/16"
 }
 
+variable "cluster_pod_cidr" {
+  description = "CNI pod cidr"
+  default     = "10.244.0.0/24"
+}
+
 variable "network_docker_bridge_cidr" {
   description = "Docker bridge cidr"
   default     = "172.17.0.1/16"

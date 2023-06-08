@@ -14,20 +14,6 @@ provider "kubernetes" {
   }
 }
 
-provider "helm" {
-  kubernetes {
-    host                   = module.eks.cluster_endpoint
-    cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
-
-    exec {
-      api_version = "client.authentication.k8s.io/v1beta1"
-      command     = "aws"
-      # This requires the awscli to be installed locally where Terraform is executed
-      args = ["eks", "get-token", "--cluster-name", local.name]
-    }
-  }
-}
-
 data "aws_eks_cluster_auth" "this" {
   name = module.eks.cluster_name
 }
@@ -173,66 +159,13 @@ resource "null_resource" "remove_aws_node_ds" {
   ]
 }
 
-resource "kubernetes_namespace" "tigera_operator" {
-  metadata {
-    name = "tigera-operator"
-  }
-}
-
-resource "kubernetes_namespace" "calico_system" {
-  metadata {
-    name = "calico-system"
-  }
-}
-
-resource "kubernetes_namespace" "calico_apiserver" {
-  metadata {
-    name = "calico-apiserver"
-  }
-}
-
-resource "helm_release" "calico" {
-  name       = "calico"
-  chart      = "tigera-operator"
-  repository = "https://docs.projectcalico.org/charts"
-  version    = "v3.24.1"
-  namespace  = "tigera-operator"
-  values = [templatefile("${path.module}/helm_values/values-calico.yaml", {
-    pod_cidr     = "${local.pod_cidr}"
-    calico_encap = "${local.calico_encap}"
-  })]
-
-  depends_on = [
-    module.eks,
-    kubernetes_namespace.tigera_operator,
-    kubernetes_namespace.calico_system,
-    kubernetes_namespace.calico_apiserver
-  ]
-}
-
-resource "null_resource" "remove_finalizers" {
-  provisioner "local-exec" {
-    when        = destroy
-    interpreter = ["/bin/bash", "-c"]
-    command     = "kubectl delete installations.operator.tigera.io default"
-  }
-
-  triggers = {
-    helm_tigera = helm_release.calico.status
-  }
-
-  depends_on = [
-    helm_release.calico
-  ]
-}
-
 ################################################################################
 # Supporting Resources
 ################################################################################
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 3.19.0"
+  version = ">= 5.0.0"
 
   name = local.name
   cidr = local.vpc_cidr

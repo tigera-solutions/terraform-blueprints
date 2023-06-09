@@ -43,6 +43,7 @@ locals {
   azs                       = slice(data.aws_availability_zones.available.names, 0, 2)
   desired_size              = var.desired_size
   cluster_version           = var.cluster_version
+  calico_version            = var.calico_version
   pod_cidr                  = var.pod_cidr
   calico_encap              = "VXLAN"
 
@@ -140,28 +141,6 @@ module "eks" {
   tags = local.tags
 }
 
-module "eks_blueprints_addons" {
-  source = "aws-ia/eks-blueprints-addons/aws"
-
-  cluster_name      = module.eks.cluster_name
-  cluster_endpoint  = module.eks.cluster_endpoint
-  cluster_version   = module.eks.cluster_version
-  oidc_provider_arn = module.eks.oidc_provider_arn
-
-  eks_addons = {
-    aws-ebs-csi-driver = {
-      most_recent = true
-    }
-  }
-
-  tags = local.tags
-
-  depends_on = [
-    null_resource.remove_aws_node_ds,
-    helm_release.calico
-  ]
-}
-
 ################################################################################
 # Calico Resources
 ################################################################################
@@ -170,7 +149,7 @@ resource "helm_release" "calico" {
   name             = "calico"
   chart            = "tigera-operator"
   repository       = "https://docs.projectcalico.org/charts"
-  version          = "v3.25.1"
+  version          = "${local.calico_version}"
   namespace        = "tigera-operator"
   create_namespace = true
   values = [templatefile("${path.module}/helm_values/values-calico.yaml", {

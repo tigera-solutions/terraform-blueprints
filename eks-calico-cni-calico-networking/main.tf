@@ -10,7 +10,21 @@ provider "kubernetes" {
     api_version = "client.authentication.k8s.io/v1beta1"
     command     = "aws"
     # This requires the awscli to be installed locally where Terraform is executed
-    args = ["eks", "get-token", "--cluster-name", local.name]
+    args = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
+  }
+}
+
+provider "helm" {
+  kubernetes {
+    host                   = module.eks.cluster_endpoint
+    cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
+
+    exec {
+      api_version = "client.authentication.k8s.io/v1beta1"
+      command     = "aws"
+      # This requires the awscli to be installed locally where Terraform is executed
+      args = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
+    }
   }
 }
 
@@ -126,9 +140,49 @@ module "eks" {
   tags = local.tags
 }
 
+module "eks_blueprints_addons" {
+  source = "aws-ia/eks-blueprints-addons/aws"
+
+  cluster_name      = module.eks.cluster_name
+  cluster_endpoint  = module.eks.cluster_endpoint
+  cluster_version   = module.eks.cluster_version
+  oidc_provider_arn = module.eks.oidc_provider_arn
+
+  eks_addons = {
+    aws-ebs-csi-driver = {
+      most_recent = true
+    }
+  }
+
+  tags = local.tags
+
+  depends_on = [
+    null_resource.remove_aws_node_ds,
+    helm_release.calico
+  ]
+}
+
 ################################################################################
 # Calico Resources
 ################################################################################
+
+resource "helm_release" "calico" {
+  name             = "calico"
+  chart            = "tigera-operator"
+  repository       = "https://docs.projectcalico.org/charts"
+  version          = "v3.25.1"
+  namespace        = "tigera-operator"
+  create_namespace = true
+  values = [templatefile("${path.module}/helm_values/values-calico.yaml", {
+    pod_cidr     = "${local.pod_cidr}"
+    calico_encap = "${local.calico_encap}"
+  })]
+
+  depends_on = [
+    module.eks,
+    null_resource.scale_up_node_group
+  ]
+}
 
 resource "aws_iam_policy" "additional" {
   name   = "${local.name}-additional"

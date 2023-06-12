@@ -31,7 +31,7 @@ variable "secondary_vpc_cidr" {
 variable "pod_cidr" {
   description = "Calico POD CIDR"
   type        = string
-  default     = "10.244.0.0/16"
+  default     = "10.244.0.0/24"
 }
 
 variable "cluster_service_ipv4_cidr" {

@@ -149,7 +149,7 @@ resource "helm_release" "calico" {
   name             = "calico"
   chart            = "tigera-operator"
   repository       = "https://docs.projectcalico.org/charts"
-  version          = "${local.calico_version}"
+  version          = local.calico_version
   namespace        = "tigera-operator"
   create_namespace = true
   values = [templatefile("${path.module}/helm_values/values-calico.yaml", {

@@ -128,6 +128,14 @@ module "eks" {
       type                          = "ingress"
       source_cluster_security_group = true
     }
+    ingress_to_metrics_server = {
+      description                   = "Cluster API to metrics-server"
+      protocol                      = "tcp"
+      from_port                     = 30000
+      to_port                       = 30000
+      type                          = "ingress"
+      source_cluster_security_group = true
+    }
     ingress_self_all = {
       description = "Node to node all ports/protocols"
       protocol    = "-1"

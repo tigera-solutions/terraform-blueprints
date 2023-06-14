@@ -22,11 +22,6 @@ output "cluster_version" {
   value       = module.eks.cluster_version
 }
 
-output "cluster_region" {
-  description = "The AWS region for the cluster"
-  value       = local.region
-}
-
 output "cluster_certificate_authority_data" {
   description = "Base64 encoded certificate data required to communicate with the cluster"
   value       = module.eks.cluster_certificate_authority_data

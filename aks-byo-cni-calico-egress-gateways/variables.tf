@@ -40,7 +40,7 @@ variable "spoke_2_vnet_name" {
 
 variable "kube_version_prefix" {
   description = "AKS Kubernetes version prefix. Formatted '[Major].[Minor]' like '1.18'. Patch version part (as in '[Major].[Minor].[Patch]') will be set to latest automatically."
-  default     = "1.23"
+  default     = "1.27"
 }
 
 variable "nodepool_nodes_count" {

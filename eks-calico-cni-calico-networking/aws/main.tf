@@ -42,6 +42,7 @@ locals {
   cluster_service_ipv4_cidr = var.cluster_service_ipv4_cidr
   azs                       = slice(data.aws_availability_zones.available.names, 0, 2)
   desired_size              = var.desired_size
+  key_name                  = var.ssh_keyname
   cluster_version           = var.cluster_version
   calico_version            = var.calico_version
   pod_cidr                  = var.pod_cidr
@@ -101,6 +102,8 @@ module "eks" {
       desired_size = 0
 
       disk_size = 100
+
+      key_name = local.key_name
 
       iam_role_additional_policies = {
         AmazonEBSCSIDriverPolicy = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy",

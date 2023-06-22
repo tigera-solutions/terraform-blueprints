@@ -86,12 +86,16 @@ module "hub_spoke_1_peering" {
   vnet_1_id                      = module.hub_network.vnet_id
   vnet_1_rg                      = azurerm_resource_group.vnet.name
   vnet_1_allow_gateway_transit   = true
+  peering_name_1_to_2            = "HubToSpoke1"
   vnet_2_name                    = var.spoke_1_vnet_name
   vnet_2_id                      = module.spoke_1_network.vnet_id
   vnet_2_rg                      = azurerm_resource_group.kube.name
   vnet_2_use_remote_gateways     = true
-  peering_name_1_to_2            = "HubToSpoke1"
   peering_name_2_to_1            = "Spoke1ToHub"
+
+  depends_on = [
+    module.hub_route_server,
+  ]
 }
 
 module "hub_spoke_2_peering" {
@@ -100,12 +104,16 @@ module "hub_spoke_2_peering" {
   vnet_1_id                      = module.hub_network.vnet_id
   vnet_1_rg                      = azurerm_resource_group.vnet.name
   vnet_1_allow_gateway_transit   = true
+  peering_name_1_to_2            = "HubToSpoke2"
   vnet_2_name                    = var.spoke_2_vnet_name
   vnet_2_id                      = module.spoke_2_network.vnet_id
   vnet_2_rg                      = azurerm_resource_group.kube.name
   vnet_2_use_remote_gateways     = true
-  peering_name_1_to_2            = "HubToSpoke2"
   peering_name_2_to_1            = "Spoke2ToHub"
+
+  depends_on = [
+    module.hub_route_server,
+  ]
 }
 
 module "spoke_1_spoke_2_peering" {
@@ -113,10 +121,10 @@ module "spoke_1_spoke_2_peering" {
   vnet_1_name         = var.spoke_1_vnet_name
   vnet_1_id           = module.spoke_1_network.vnet_id
   vnet_1_rg           = azurerm_resource_group.kube.name
+  peering_name_1_to_2 = "Spoke1ToSpoke2"
   vnet_2_name         = var.spoke_2_vnet_name
   vnet_2_id           = module.spoke_2_network.vnet_id
   vnet_2_rg           = azurerm_resource_group.kube.name
-  peering_name_1_to_2 = "Spoke1ToSpoke2"
   peering_name_2_to_1 = "Spoke2ToSpoke1"
 }
 

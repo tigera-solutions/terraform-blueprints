@@ -34,8 +34,12 @@ module "hub_network" {
       address_prefixes : ["10.0.0.0/24"]
     },
     {
-      name : "jumpbox-subnet"
+      name : "RouteServerSubnet"
       address_prefixes : ["10.0.1.0/24"]
+    },
+    {
+      name : "jumpbox-subnet"
+      address_prefixes : ["10.0.2.0/24"]
     }
   ]
 }
@@ -77,27 +81,29 @@ module "spoke_2_network" {
 }
 
 module "hub_spoke_1_peering" {
-  source              = "./modules/vnet_peering"
-  vnet_1_name         = var.hub_vnet_name
-  vnet_1_id           = module.hub_network.vnet_id
-  vnet_1_rg           = azurerm_resource_group.vnet.name
-  vnet_2_name         = var.spoke_1_vnet_name
-  vnet_2_id           = module.spoke_1_network.vnet_id
-  vnet_2_rg           = azurerm_resource_group.kube.name
-  peering_name_1_to_2 = "HubToSpoke1"
-  peering_name_2_to_1 = "Spoke1ToHub"
+  source                         = "./modules/vnet_peering"
+  vnet_1_name                    = var.hub_vnet_name
+  vnet_1_id                      = module.hub_network.vnet_id
+  vnet_1_rg                      = azurerm_resource_group.vnet.name
+  vnet_1_allow_gateway_transit   = true
+  vnet_2_name                    = var.spoke_1_vnet_name
+  vnet_2_id                      = module.spoke_1_network.vnet_id
+  vnet_2_rg                      = azurerm_resource_group.kube.name
+  peering_name_1_to_2            = "HubToSpoke1"
+  peering_name_2_to_1            = "Spoke1ToHub"
 }
 
 module "hub_spoke_2_peering" {
-  source              = "./modules/vnet_peering"
-  vnet_1_name         = var.hub_vnet_name
-  vnet_1_id           = module.hub_network.vnet_id
-  vnet_1_rg           = azurerm_resource_group.vnet.name
-  vnet_2_name         = var.spoke_2_vnet_name
-  vnet_2_id           = module.spoke_2_network.vnet_id
-  vnet_2_rg           = azurerm_resource_group.kube.name
-  peering_name_1_to_2 = "HubToSpoke2"
-  peering_name_2_to_1 = "Spoke2ToHub"
+  source                         = "./modules/vnet_peering"
+  vnet_1_name                    = var.hub_vnet_name
+  vnet_1_id                      = module.hub_network.vnet_id
+  vnet_1_rg                      = azurerm_resource_group.vnet.name
+  vnet_1_allow_gateway_transit   = true
+  vnet_2_name                    = var.spoke_2_vnet_name
+  vnet_2_id                      = module.spoke_2_network.vnet_id
+  vnet_2_rg                      = azurerm_resource_group.kube.name
+  peering_name_1_to_2            = "HubToSpoke2"
+  peering_name_2_to_1            = "Spoke2ToHub"
 }
 
 module "spoke_1_spoke_2_peering" {
@@ -141,40 +147,21 @@ module "spoke_2_routetable" {
   subnet_id           = module.spoke_2_network.subnet_ids["aks-subnet"]
 }
 
-module "spoke_1_route_server" {
+module "hub_route_server" {
   source         = "./modules/route_server"
-  resource_group = azurerm_resource_group.kube.name
+  resource_group = azurerm_resource_group.vnet.name
   location       = var.location
-  subnet_id      = module.spoke_1_network.subnet_ids["RouteServerSubnet"]
-  rs_name        = "spoke1-rs"
-  rs_pip_name    = "spoke1-rs-pip"
+  subnet_id      = module.hub_network.subnet_ids["RouteServerSubnet"]
+  rs_name        = "hub-rs"
+  rs_pip_name    = "hub-rs-pip"
   bgp_peers = [
     {
       peer_asn : 63400
-      peer_ip : "10.1.0.5"
+      peer_ip : "10.0.1.5"
     },
     {
       peer_asn : 63400
-      peer_ip : "10.1.0.6"
-    },
-  ]
-}
-
-module "spoke_2_route_server" {
-  source         = "./modules/route_server"
-  resource_group = azurerm_resource_group.kube.name
-  location       = var.location
-  subnet_id      = module.spoke_2_network.subnet_ids["RouteServerSubnet"]
-  rs_name        = "spoke2-rs"
-  rs_pip_name    = "spoke2-rs-pip"
-  bgp_peers = [
-    {
-      peer_asn : 63400
-      peer_ip : "10.2.0.5"
-    },
-    {
-      peer_asn : 63400
-      peer_ip : "10.2.0.6"
+      peer_ip : "10.0.1.6"
     },
   ]
 }

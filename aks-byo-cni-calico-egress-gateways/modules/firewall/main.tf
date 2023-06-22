@@ -20,6 +20,23 @@ resource "azurerm_firewall" "fw" {
   }
 }
 
+resource "azurerm_firewall_network_rule_collection" "wide_open" {
+  name                = "wide-open"
+  azure_firewall_name = azurerm_firewall.fw.name
+  resource_group_name = var.resource_group
+  priority            = 100
+  action              = "Allow"
+
+  rule {
+    description       = "wide open"
+    name              = "wide open"
+    source_addresses  = ["*"]
+    destination_ports = ["*"]
+    protocols         = ["Any"]
+    destination_addresses = ["*"]
+  }
+}
+
 resource "azurerm_firewall_network_rule_collection" "servicetags" {
   name                = "servicetags"
   azure_firewall_name = azurerm_firewall.fw.name

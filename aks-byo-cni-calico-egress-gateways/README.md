@@ -1,4 +1,4 @@
-# AKS Bring Your Own CNI Cluster With Custom Networking and Egress Gateways
+# AKS BYO CNI Cluster With Custom Networking and Egress Gateways
 
 Manage a "Fully" private AKS infrastructure with Terraform.
 

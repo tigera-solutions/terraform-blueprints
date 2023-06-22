@@ -1,4 +1,4 @@
-# AKS Bring Your Own CNI Cluster With Custom Networking
+# AKS BYO CNI Cluster With Custom Networking
 
 Public AKS Cluster with No CNI installed
 

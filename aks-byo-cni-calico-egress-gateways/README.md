@@ -26,6 +26,16 @@ Enter `yes` at command prompt to apply
 
 1. SSH to the jump-host
 
+You should see similar terraform outputs.
+
+```
+Apply complete! Resources: 0 added, 1 changed, 0 destroyed.
+
+Outputs:
+
+ssh_command = "ssh azureuser@<PUBLIC IPADDRESS >"
+```
+
 2. Authenticate to Azure. Open the URL in a browser and enter the code.
 
 ```sh

@@ -5,6 +5,8 @@ installation:
     ipam:
       type: Calico
   calicoNetwork:
+    linuxDataplane: BPF
+    hostPorts: Disabled
     bgp: Disabled
     ipPools:
     - cidr: ${pod_cidr}

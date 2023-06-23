@@ -186,6 +186,7 @@ resource "null_resource" "scale_up_node_group" {
 
   depends_on = [
     null_resource.remove_aws_node_ds,
+    kubernetes_config_map.kubernetes_services_endpoint
   ]
 }
 
@@ -200,6 +201,42 @@ resource "null_resource" "remove_aws_node_ds" {
 
   depends_on = [
     module.eks
+  ]
+}
+
+resource "null_resource" "remove_kube_proxy_ds" {
+  provisioner "local-exec" {
+    interpreter = ["/bin/bash", "-c"]
+    environment = {
+      KUBECONFIG = base64encode(local.kubeconfig)
+    }
+    command = "kubectl delete ds -n kube-system kube-proxy --kubeconfig <(echo $KUBECONFIG | base64 -d)"
+  }
+
+  depends_on = [
+    module.eks
+  ]
+}
+
+resource "kubernetes_namespace" "tigera_operator" {
+  metadata {
+    name = "tigera-operator"
+  }
+}
+
+resource "kubernetes_config_map" "kubernetes_services_endpoint" {
+  metadata {
+    name      = "kubernetes-services-endpoint"
+    namespace = "tigera-operator"
+  }
+
+  data = {
+    KUBERNETES_SERVICE_HOST = trimprefix(module.eks.cluster_endpoint, "https://")
+    KUBERNETES_SERVICE_PORT = "443"
+  }
+
+  depends_on = [
+    kubernetes_namespace.tigera_operator
   ]
 }
 

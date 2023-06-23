@@ -20,28 +20,11 @@ resource "azurerm_firewall" "fw" {
   }
 }
 
-#resource "azurerm_firewall_network_rule_collection" "wide_open" {
-#  name                = "wide-open"
-#  azure_firewall_name = azurerm_firewall.fw.name
-#  resource_group_name = var.resource_group
-#  priority            = 100
-#  action              = "Allow"
-#
-#  rule {
-#    description       = "wide open"
-#    name              = "wide open"
-#    source_addresses  = ["*"]
-#    destination_ports = ["*"]
-#    protocols         = ["Any"]
-#    destination_addresses = ["*"]
-#  }
-#}
-
 resource "azurerm_firewall_network_rule_collection" "servicetags" {
   name                = "servicetags"
   azure_firewall_name = azurerm_firewall.fw.name
   resource_group_name = var.resource_group
-  priority            = 110
+  priority            = 100
   action              = "Allow"
 
   rule {
@@ -54,81 +37,25 @@ resource "azurerm_firewall_network_rule_collection" "servicetags" {
     destination_addresses = [
       "AzureContainerRegistry",
       "MicrosoftContainerRegistry",
-      "AzureActiveDirectory"
+      "AzureActiveDirectory",
     ]
   }
 }
 
-resource "azurerm_firewall_application_rule_collection" "aksbasics" {
-  name                = "aksbasics"
+resource "azurerm_firewall_application_rule_collection" "fqdntags" {
+  name                = "fqdntags"
   azure_firewall_name = azurerm_firewall.fw.name
   resource_group_name = var.resource_group
-  priority            = 101
+  priority            = 100
   action              = "Allow"
 
   rule {
-    name             = "allow network"
+    name             = "allow fqdn tags"
     source_addresses = ["*"]
 
-    target_fqdns = [
-      "*.cdn.mscr.io",
-      "mcr.microsoft.com",
-      "*.data.mcr.microsoft.com",
-      "management.azure.com",
-      "login.microsoftonline.com",
-      "acs-mirror.azureedge.net",
-      "dc.services.visualstudio.com",
-      "*.opinsights.azure.com",
-      "*.oms.opinsights.azure.com",
-      "*.microsoftonline.com",
-      "*.monitoring.azure.com",
+    fqdn_tags = [
+      "AzureKubernetesService",
     ]
-
-    protocol {
-      port = "80"
-      type = "Http"
-    }
-
-    protocol {
-      port = "443"
-      type = "Https"
-    }
-  }
-}
-
-resource "azurerm_firewall_application_rule_collection" "osupdates" {
-  name                = "osupdates"
-  azure_firewall_name = azurerm_firewall.fw.name
-  resource_group_name = var.resource_group
-  priority            = 102
-  action              = "Allow"
-
-  rule {
-    name             = "allow network"
-    source_addresses = ["*"]
-
-    target_fqdns = [
-      "download.opensuse.org",
-      "security.ubuntu.com",
-      "updates.ubuntu.com",
-      "azure.archive.updates.ubuntu.com",
-      "changelogs.ubuntu.com",
-      "packages.microsoft.com",
-      "snapcraft.io",
-      "apt.kubernetes.io",
-      "packages.cloud.google.com",
-      "aka.ms"
-    ]
-
-    protocol {
-      port = "80"
-      type = "Http"
-    }
-
-    protocol {
-      port = "443"
-      type = "Https"
-    }
   }
 }
 
@@ -146,36 +73,10 @@ resource "azurerm_firewall_application_rule_collection" "publicimages" {
     target_fqdns = [
       "auth.docker.io",
       "registry-1.docker.io",
-      "production.cloudflare.docker.com"
-    ]
-
-    protocol {
-      port = "80"
-      type = "Http"
-    }
-
-    protocol {
-      port = "443"
-      type = "Https"
-    }
-  }
-}
-
-resource "azurerm_firewall_application_rule_collection" "calico" {
-  name                = "calico"
-  azure_firewall_name = azurerm_firewall.fw.name
-  resource_group_name = var.resource_group
-  priority            = 105
-  action              = "Allow"
-
-  rule {
-    name             = "allow network"
-    source_addresses = ["*"]
-
-    target_fqdns = [
+      "production.cloudflare.docker.com",
       "quay.io",
       "*.quay.io",
-      "downloads.tigera.io",
+      "downloads.tigera.io"
     ]
 
     protocol {

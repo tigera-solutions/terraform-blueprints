@@ -1,4 +1,4 @@
-# Calico CNI with eBPF Networking
+# Calico CNI with eBPF Dataplane
 
 This example demonstrates how to provision an EKS cluster using the Calico CNI with eBPF dataplane.
 

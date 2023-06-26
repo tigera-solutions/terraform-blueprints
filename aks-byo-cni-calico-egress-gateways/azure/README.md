@@ -1,7 +1,5 @@
 # AKS BYO CNI Cluster With Custom Networking and Egress Gateways
 
-In this repository, we enhance the architecture described in the medium article titled [Create a "Fully private” AKS infrastructure with Terraform](https://medium.com/@paveltuzov/create-a-fully-private-aks-infrastructure-with-terraform-e92358f0bf65?source=friends_link&sk=124faab1bb557c25c0ed536ae09af0a3). Our goal is to incorporate Egress Gateways, enabling us to identify the Kubernetes workloads that pass through the Azure Firewall.
-
 
 ## Prerequisites:
 

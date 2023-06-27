@@ -43,13 +43,13 @@ variable "cluster_service_ipv4_cidr" {
 variable "cluster_version" {
   description = "Kubernetes version for this cluster"
   type        = string
-  default     = "1.27"
+  default     = "1.26"
 }
 
 variable "calico_version" {
   description = "Calico Open Source release version"
   type        = string
-  default     = "3.26.1"
+  default     = "3.25.1"
 }
 
 variable "desired_size" {

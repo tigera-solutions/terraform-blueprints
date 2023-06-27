@@ -5,12 +5,12 @@ variable "location" {
 
 variable "vnet_resource_group_name" {
   description = "The resource group name to be created"
-  default     = "sabo-network-hub"
+  default     = "hub-network"
 }
 
 variable "kube_resource_group_name" {
   description = "The resource group name to be created"
-  default     = "sabo-private-aks"
+  default     = "spoke-networks"
 }
 
 variable "admin_username" {
@@ -24,28 +24,23 @@ variable "admin_ssh_key" {
 }
 
 variable "hub_vnet_name" {
-  description = "Hub VNET name"
-  default     = "hub1-firewallvnet"
+  description = "Hub1 VNET name"
+  default     = "hub1-vnet"
 }
 
 variable "spoke_1_vnet_name" {
-  description = "AKS VNET name"
-  default     = "spoke1-kubevnet"
-}
-
-variable "spoke_2_vnet_name" {
-  description = "AKS VNET name"
-  default     = "spoke2-kubevnet"
+  description = "Spoke1 VNET name"
+  default     = "spoke1-vnet"
 }
 
 variable "kube_version_prefix" {
   description = "AKS Kubernetes version prefix. Formatted '[Major].[Minor]' like '1.18'. Patch version part (as in '[Major].[Minor].[Patch]') will be set to latest automatically."
-  default     = "1.27"
+  default     = "1.26"
 }
 
 variable "nodepool_nodes_count" {
   description = "Default nodepool nodes count"
-  default     = 1
+  default     = 2
 }
 
 variable "nodepool_vm_size" {

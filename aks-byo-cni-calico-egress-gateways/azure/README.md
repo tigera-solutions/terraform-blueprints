@@ -22,29 +22,16 @@ Enter `yes` at command prompt to apply
 
 ### Validate
 
-1. SSH to the jump-host
-
-You should see similar terraform outputs.
-
-```
-Apply complete! Resources: 0 added, 1 changed, 0 destroyed.
-
-Outputs:
-
-ssh_command = "ssh azureuser@<PUBLIC IPADDRESS >"
-```
-
-2. Authenticate to Azure. Open the URL in a browser and enter the code.
+1. Authenticate to Azure.
 
 ```sh
 az login
 ```
 
-3. Update the kubeconfig on the jump-host
+2. Update the kubeconfig
 
 ```sh
 az aks get-credentials --name <SPOKE1 CLUSTER_NAME> --resource-group <SPOKE RESOURCE GROUP>
-az aks get-credentials --name <SPOKE2 CLUSTER_NAME> --resource-group <SPOKE RESOURCE GROUP>
 ```
 
 4. View the pods that were created:

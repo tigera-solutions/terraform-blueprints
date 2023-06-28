@@ -83,7 +83,7 @@ module "firewall" {
 
 module "spoke_1_routetable" {
   source              = "./modules/route_table"
-  resource_group      = azurerm_resource_group.vnet.name
+  resource_group      = azurerm_resource_group.kube.name
   location            = var.location
   rt_name             = "spoke_1-fw-rt"
   r_name              = "spoke_1-fw-r"

@@ -101,11 +101,11 @@ module "hub_route_server" {
   bgp_peers = [
     {
       peer_asn : 63400
-      peer_ip : "10.0.1.5"
+      peer_ip : "10.1.0.4"
     },
     {
       peer_asn : 63400
-      peer_ip : "10.0.1.6"
+      peer_ip : "10.1.0.5"
     },
   ]
 }

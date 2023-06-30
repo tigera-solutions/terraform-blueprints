@@ -49,6 +49,24 @@ resource "helm_release" "calico" {
   })]
 }
 
+resource "kubernetes_manifest" "bgpconfiguration_default" {
+  manifest = {
+    "apiVersion" = "projectcalico.org/v3"
+    "kind" = "BGPConfiguration"
+    "metadata" = {
+      "name" = "default"
+    }
+    "spec" = {
+      "asNumber" = 63400
+      "logSeverityScreen" = "Info"
+      "nodeToNodeMeshEnabled" = false
+    }
+  }
+  depends_on = [
+    helm_release.calico
+  ]
+}
+
 resource "kubernetes_manifest" "bgppeer_peer_with_route_reflectors" {
   manifest = {
     "apiVersion" = "projectcalico.org/v3"

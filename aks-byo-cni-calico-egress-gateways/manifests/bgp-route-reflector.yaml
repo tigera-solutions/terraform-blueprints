@@ -1,0 +1,34 @@
+---
+kind: BGPPeer
+apiVersion: projectcalico.org/v3
+metadata:
+  name: peer-with-route-reflectors
+spec:
+  nodeSelector: all()
+  peerSelector: route-reflector == 'true'
+---
+apiVersion: projectcalico.org/v3
+kind: BGPPeer
+metadata:
+  name: azure-route-server-a
+spec:
+  peerIP: 10.0.1.4
+  reachableBy: 10.1.0.1
+  asNumber: 65515
+  keepOriginalNextHop: true
+  nodeSelector: route-reflector == 'true'
+  filters:
+    - export-egress-ips
+---
+apiVersion: projectcalico.org/v3
+kind: BGPPeer
+metadata:
+  name: azure-route-server-b
+spec:
+  peerIP: 10.0.1.5
+  reachableBy: 10.1.0.1
+  asNumber: 65515
+  keepOriginalNextHop: true
+  nodeSelector: route-reflector == 'true'
+  filters:
+    - export-egress-ips

@@ -8,4 +8,4 @@ installation:
     bgp: Disabled
     ipPools:
     - cidr: ${pod_cidr}
-      encapsulation: VXLAN
+      encapsulation: ${calico_encap}

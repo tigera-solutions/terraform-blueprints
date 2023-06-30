@@ -17,8 +17,8 @@ spec:
   asNumber: 65515
   keepOriginalNextHop: true
   nodeSelector: route-reflector == 'true'
-  filters:
-    - export-egress-ips
+#  filters:
+#    - export-egress-ips
 ---
 apiVersion: projectcalico.org/v3
 kind: BGPPeer
@@ -30,5 +30,5 @@ spec:
   asNumber: 65515
   keepOriginalNextHop: true
   nodeSelector: route-reflector == 'true'
-  filters:
-    - export-egress-ips
+#  filters:
+#    - export-egress-ips

@@ -47,7 +47,62 @@ resource "helm_release" "calico" {
     pod_cidr     = "${local.pod_cidr}"
     calico_encap = "${local.calico_encap}"
   })]
+}
+
+resource "kubernetes_manifest" "bgppeer_peer_with_route_reflectors" {
+  manifest = {
+    "apiVersion" = "projectcalico.org/v3"
+    "kind" = "BGPPeer"
+    "metadata" = {
+      "name" = "peer-with-route-reflectors"
+    }
+    "spec" = {
+      "nodeSelector" = "all()"
+      "peerSelector" = "route-reflector == 'true'"
+    }
+  }
 
   depends_on = [
+    helm_release.calico
+  ]
+}
+
+resource "kubernetes_manifest" "bgppeer_azure_route_server_a" {
+  manifest = {
+    "apiVersion" = "projectcalico.org/v3"
+    "kind" = "BGPPeer"
+    "metadata" = {
+      "name" = "azure-route-server-a"
+    }
+    "spec" = {
+      "asNumber" = 65515
+      "keepOriginalNextHop" = true
+      "nodeSelector" = "route-reflector == 'true'"
+      "peerIP" = "10.0.1.4"
+      "reachableBy" = "10.1.0.1"
+    }
+  }
+  depends_on = [
+    helm_release.calico
+  ]
+}
+
+resource "kubernetes_manifest" "bgppeer_azure_route_server_b" {
+  manifest = {
+    "apiVersion" = "projectcalico.org/v3"
+    "kind" = "BGPPeer"
+    "metadata" = {
+      "name" = "azure-route-server-b"
+    }
+    "spec" = {
+      "asNumber" = 65515
+      "keepOriginalNextHop" = true
+      "nodeSelector" = "route-reflector == 'true'"
+      "peerIP" = "10.0.1.5"
+      "reachableBy" = "10.1.0.1"
+    }
+  }
+  depends_on = [
+    helm_release.calico
   ]
 }

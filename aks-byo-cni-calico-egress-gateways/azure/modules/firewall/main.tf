@@ -80,8 +80,8 @@ resource "azurerm_firewall_network_rule_collection" "allowed_network_rules" {
   action              = "Allow"
 
   rule {
-    description       = "allow access to public networks"
-    name              = "allow access to public networks"
+    description       = "allow access to public dns"
+    name              = "allow access to public dns"
     source_addresses  = ["*"]
     destination_ports = ["53"]
     destination_addresses = [
@@ -92,5 +92,14 @@ resource "azurerm_firewall_network_rule_collection" "allowed_network_rules" {
       "UDP",
       "TCP",
     ]
+  }
+
+  rule {
+    description       = "allow access to public https"
+    name              = "allow access to public https"
+    source_addresses  = ["*"]
+    destination_ports = ["443"]
+    destination_addresses = ["*"]
+    protocols         = ["TCP"]
   }
 }

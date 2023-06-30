@@ -129,6 +129,9 @@ resource "azurerm_kubernetes_cluster" "spoke_1_aks" {
     vm_size        = var.nodepool_vm_size
     vnet_subnet_id = module.spoke_1_network.subnet_ids["aks-subnet"]
     type           = "VirtualMachineScaleSets"
+    node_labels = {
+      route-reflector = true
+    }
   }
 
   identity {

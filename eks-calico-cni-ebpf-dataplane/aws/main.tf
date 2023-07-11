@@ -175,7 +175,7 @@ resource "helm_release" "calico" {
 }
 
 resource "aws_iam_policy" "additional" {
-  name   = "${local.name}-additional"
+  name   = "${local.name}-calico-ebpf-additional"
   policy = file("${path.cwd}/min-iam-policy.json")
 }
 

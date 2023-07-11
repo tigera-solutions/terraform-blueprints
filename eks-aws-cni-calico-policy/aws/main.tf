@@ -45,8 +45,6 @@ locals {
   key_name                  = var.ssh_keyname
   cluster_version           = var.cluster_version
   calico_version            = var.calico_version
-  pod_cidr                  = var.pod_cidr
-  calico_encap              = "VXLAN"
 
   kubeconfig = yamlencode({
     apiVersion      = "v1"
@@ -99,7 +97,7 @@ module "eks" {
 
       min_size     = 0
       max_size     = 8
-      desired_size = 0
+      desired_size = local.desired_size
 
       disk_size = 100
 
@@ -163,44 +161,16 @@ resource "helm_release" "calico" {
   version          = local.calico_version
   namespace        = "tigera-operator"
   create_namespace = true
-  values = [templatefile("${path.module}/helm_values/values-calico.yaml", {
-    pod_cidr     = "${local.pod_cidr}"
-    calico_encap = "${local.calico_encap}"
-  })]
+  values = [templatefile("${path.module}/helm_values/values-calico.yaml", {})]
 
   depends_on = [
     module.eks,
-    null_resource.scale_up_node_group
   ]
 }
 
 resource "aws_iam_policy" "additional" {
-  name   = "${local.name}-calico-cni-additional"
+  name   = "${local.name}-aws-cni-additional"
   policy = file("${path.cwd}/min-iam-policy.json")
-}
-
-resource "null_resource" "scale_up_node_group" {
-  provisioner "local-exec" {
-    command = "aws eks update-nodegroup-config --cluster-name ${split(":", module.eks.eks_managed_node_groups.calico.node_group_id)[0]} --nodegroup-name ${split(":", module.eks.eks_managed_node_groups.calico.node_group_id)[1]} --scaling-config desiredSize=${local.desired_size}"
-  }
-
-  depends_on = [
-    null_resource.remove_aws_node_ds,
-  ]
-}
-
-resource "null_resource" "remove_aws_node_ds" {
-  provisioner "local-exec" {
-    interpreter = ["/bin/bash", "-c"]
-    environment = {
-      KUBECONFIG = base64encode(local.kubeconfig)
-    }
-    command = "kubectl delete ds -n kube-system aws-node --kubeconfig <(echo $KUBECONFIG | base64 -d)"
-  }
-
-  depends_on = [
-    module.eks
-  ]
 }
 
 ################################################################################

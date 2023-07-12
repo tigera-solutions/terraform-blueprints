@@ -161,7 +161,7 @@ resource "helm_release" "calico" {
   version          = local.calico_version
   namespace        = "tigera-operator"
   create_namespace = true
-  values = [templatefile("${path.module}/helm_values/values-calico.yaml", {})]
+  values           = [templatefile("${path.module}/helm_values/values-calico.yaml", {})]
 
   depends_on = [
     module.eks,

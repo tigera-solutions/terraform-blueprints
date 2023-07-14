@@ -74,6 +74,55 @@ locals {
   tags = {}
 }
 
+module "eks_blueprints_addons" {
+  source = "aws-ia/eks-blueprints-addons/aws"
+
+  cluster_name      = local.cluster_name
+  cluster_endpoint  = local.cluster_endpoint
+  cluster_version   = local.cluster_version
+  oidc_provider_arn = local.oidc_provider_arn
+
+  eks_addons = {
+    aws-ebs-csi-driver = {
+      most_recent = true
+    }
+  }
+
+  enable_metrics_server = true
+  metrics_server = {
+    name          = "metrics-server"
+    chart_version = "3.10.0"
+    repository    = "https://kubernetes-sigs.github.io/metrics-server/"
+    namespace     = "kube-system"
+    values        = [templatefile("${path.module}/helm_values/values-metrics-server.yaml", {})]
+  }
+
+  enable_aws_load_balancer_controller = true
+  aws_load_balancer_controller = {
+    name       = "aws-load-balancer-controller"
+    chart      = "aws-load-balancer-controller"
+    repository = "https://aws.github.io/eks-charts"
+    version    = "1.4.8"
+    namespace  = "kube-system"
+    values = [templatefile("${path.module}/helm_values/values-aws-load-balancer-controller.yaml", {
+      clusterName = "${local.cluster_name}"
+      region      = "${local.region}"
+    })]
+  }
+
+  enable_ingress_nginx = true
+  ingress_nginx = {
+    name       = "ingress"
+    chart      = "ingress-nginx"
+    repository = "https://kubernetes.github.io/ingress-nginx"
+    version    = "v4.5.2"
+    namespace  = "ingress"
+    values     = [templatefile("${path.module}/helm_values/values-nginx-ingress.yaml", {})]
+  }
+
+  tags = {}
+}
+
 ################################################################################
 # Calico Resources
 ################################################################################
@@ -105,73 +154,4 @@ resource "kubernetes_storage_class" "tigera-elasticsearch" {
   reclaim_policy         = "Retain"
   allow_volume_expansion = true
   volume_binding_mode    = "WaitForFirstConsumer"
-}
-
-resource "kubernetes_service" "tigera-manager-lb" {
-  metadata {
-    name      = "tigera-manager-lb"
-    namespace = "tigera-manager"
-    annotations = {
-      "service.beta.kubernetes.io/aws-load-balancer-scheme"             = "internet-facing"
-      "service.beta.kubernetes.io/aws-load-balancer-type"               = "external"
-      "service.beta.kubernetes.io/aws-load-balancer-nlb-target-type"    = "instance"
-      "service.beta.kubernetes.io/aws-load-balancer-target-node-labels" = "kubernetes.io/os=linux"
-    }
-  }
-  spec {
-    selector = {
-      k8s-app = "tigera-manager"
-    }
-    port {
-      port        = 443
-      target_port = 9443
-      protocol    = "TCP"
-    }
-    type = "LoadBalancer"
-  }
-
-  depends_on = [
-    helm_release.calico_enterprise
-  ]
-}
-
-resource "kubernetes_service" "tigera-mcm-lb" {
-  metadata {
-    name      = "tigera-mcm-lb"
-    namespace = "tigera-manager"
-    annotations = {
-      "service.beta.kubernetes.io/aws-load-balancer-scheme"             = "internet-facing"
-      "service.beta.kubernetes.io/aws-load-balancer-type"               = "external"
-      "service.beta.kubernetes.io/aws-load-balancer-nlb-target-type"    = "instance"
-      "service.beta.kubernetes.io/aws-load-balancer-target-node-labels" = "kubernetes.io/os=linux"
-    }
-  }
-  spec {
-    selector = {
-      k8s-app = "tigera-manager"
-    }
-    port {
-      port        = 443
-      target_port = 9449
-      protocol    = "TCP"
-    }
-    type = "LoadBalancer"
-  }
-
-  depends_on = [
-    helm_release.calico_enterprise
-  ]
-}
-
-resource "kubernetes_manifest" "managementcluster_tigera_secure" {
-  manifest = {
-    "apiVersion" = "operator.tigera.io/v1"
-    "kind" = "ManagementCluster"
-    "metadata" = {
-      "name" = "tigera-secure"
-    }
-    "spec" = {
-      "address" = "mcm.tigera-solutions.io:443"
-    }
-  }
 }

@@ -1,0 +1,22 @@
+imagePullSecrets:
+  tigera-pull-secret: '${calico_enterprise_pull_secret}'
+
+installation:
+  enabled: true
+  variant: TigeraSecureEnterprise
+  kubernetesProvider: "EKS"
+
+logStorage:
+  enabled: true
+  nodes:
+    count: 3
+    resourceRequirements:
+      requests:
+        storage: 100Gi
+  indices:
+    replicas: 1
+  retention:
+    auditReports: 3
+    complianceReports: 3
+    snapshots: 3
+    flows: 3

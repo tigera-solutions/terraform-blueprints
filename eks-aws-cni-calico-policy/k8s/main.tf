@@ -120,3 +120,17 @@ module "eks_blueprints_addons" {
 
   tags = {}
 }
+
+resource "null_resource" "install_calico_enterprise_crds" {
+  provisioner "local-exec" {
+    interpreter = ["/bin/bash", "-c"]
+    environment = {
+      KUBECONFIG = base64encode(local.kubeconfig)
+    }
+    command = <<-EOT
+      kubectl apply --server-side --force-conflicts -f https://downloads.tigera.io/ee/v3.17.0/manifests/operator-crds.yaml --kubeconfig <(echo $KUBECONFIG | base64 -d)
+      kubectl apply --server-side --force-conflicts -f https://downloads.tigera.io/ee/v3.17.0/manifests/prometheus-operator-crds.yaml --kubeconfig <(echo $KUBECONFIG | base64 -d)
+      kubectl apply --server-side --force-conflicts -f https://downloads.tigera.io/ee/v3.17.0/manifests/eck-operator-crds.yaml --kubeconfig <(echo $KUBECONFIG | base64 -d)
+    EOT
+  }
+}

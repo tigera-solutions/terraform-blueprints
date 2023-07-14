@@ -45,7 +45,6 @@ locals {
   cluster_certificate_authority_data = data.terraform_remote_state.aws_tfstate.outputs.cluster_certificate_authority_data
   region                             = data.aws_region.current.name
   calico_enterprise_pull_secret      = data.local_sensitive_file.calico_enterprise_pull_secret.content
-  calico_enterprise_license          = data.local_sensitive_file.calico_enterprise_license.content
   calico_enterprise_version          = var.calico_enterprise_version
   kubeconfig = yamlencode({
     apiVersion      = "v1"
@@ -89,6 +88,7 @@ resource "helm_release" "calico_enterprise" {
   name      = "calico-enterprise"
   chart     = "https://downloads.tigera.io/ee/charts/tigera-operator-v${local.calico_enterprise_version}.tgz"
   namespace = "tigera-operator"
+  skip_crds = true
   values = [templatefile("${path.module}/helm_values/values-calico-enterprise.yaml", {
     calico_enterprise_pull_secret = local.calico_enterprise_pull_secret
   })]
@@ -108,10 +108,71 @@ resource "kubernetes_storage_class" "tigera-elasticsearch" {
   volume_binding_mode    = "WaitForFirstConsumer"
 }
 
-resource "kubernetes_manifest" "calico_enterprise_license" {
-  manifest = yamldecode(local.calico_enterprise_license)
+resource "kubernetes_service" "tigera-manager-lb" {
+  metadata {
+    name      = "tigera-manager-lb"
+    namespace = "tigera-manager"
+    annotations = {
+      "service.beta.kubernetes.io/aws-load-balancer-scheme"             = "internet-facing"
+      "service.beta.kubernetes.io/aws-load-balancer-type"               = "external"
+      "service.beta.kubernetes.io/aws-load-balancer-nlb-target-type"    = "instance"
+      "service.beta.kubernetes.io/aws-load-balancer-target-node-labels" = "kubernetes.io/os=linux"
+    }
+  }
+  spec {
+    selector = {
+      k8s-app = "tigera-manager"
+    }
+    port {
+      port        = 443
+      target_port = 9443
+      protocol    = "TCP"
+    }
+    type = "LoadBalancer"
+  }
 
   depends_on = [
     helm_release.calico_enterprise
   ]
+}
+
+resource "kubernetes_service" "tigera-mcm-lb" {
+  metadata {
+    name      = "tigera-mcm-lb"
+    namespace = "tigera-manager"
+    annotations = {
+      "service.beta.kubernetes.io/aws-load-balancer-scheme"             = "internet-facing"
+      "service.beta.kubernetes.io/aws-load-balancer-type"               = "external"
+      "service.beta.kubernetes.io/aws-load-balancer-nlb-target-type"    = "instance"
+      "service.beta.kubernetes.io/aws-load-balancer-target-node-labels" = "kubernetes.io/os=linux"
+    }
+  }
+  spec {
+    selector = {
+      k8s-app = "tigera-manager"
+    }
+    port {
+      port        = 443
+      target_port = 9449
+      protocol    = "TCP"
+    }
+    type = "LoadBalancer"
+  }
+
+  depends_on = [
+    helm_release.calico_enterprise
+  ]
+}
+
+resource "kubernetes_manifest" "managementcluster_tigera_secure" {
+  manifest = {
+    "apiVersion" = "operator.tigera.io/v1"
+    "kind" = "ManagementCluster"
+    "metadata" = {
+      "name" = "tigera-secure"
+    }
+    "spec" = {
+      "address" = "mcm.tigera-solutions.io:443"
+    }
+  }
 }

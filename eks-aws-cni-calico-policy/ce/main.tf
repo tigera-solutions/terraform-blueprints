@@ -88,7 +88,6 @@ resource "helm_release" "calico_enterprise" {
   name      = "calico-enterprise"
   chart     = "https://downloads.tigera.io/ee/charts/tigera-operator-v${local.calico_enterprise_version}.tgz"
   namespace = "tigera-operator"
-  skip_crds = true
   values = [templatefile("${path.module}/helm_values/values-calico-enterprise.yaml", {
     calico_enterprise_pull_secret = local.calico_enterprise_pull_secret
   })]

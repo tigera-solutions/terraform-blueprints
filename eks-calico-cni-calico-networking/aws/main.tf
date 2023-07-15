@@ -93,6 +93,7 @@ module "eks" {
   subnet_ids                = slice(module.vpc.private_subnets, 0, 2)
   cluster_service_ipv4_cidr = local.cluster_service_ipv4_cidr
 
+  cluster_enabled_log_types   = []
   create_cloudwatch_log_group = false
 
   eks_managed_node_groups = {

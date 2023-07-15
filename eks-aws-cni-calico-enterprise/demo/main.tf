@@ -44,6 +44,7 @@ locals {
   oidc_provider_arn                  = data.terraform_remote_state.aws_tfstate.outputs.oidc_provider_arn
   cluster_certificate_authority_data = data.terraform_remote_state.aws_tfstate.outputs.cluster_certificate_authority_data
   region                             = data.aws_region.current.name
+  multi_cluster_management_fqdn      = var.multi_cluster_management_fqdn
   kubeconfig = yamlencode({
     apiVersion      = "v1"
     kind            = "Config"
@@ -73,9 +74,10 @@ locals {
 }
 
 ################################################################################
-# Calico Resources
+# Demo Resources
 ################################################################################
 
+# Network load balancer to expose the tigera-manager ui
 resource "kubernetes_service" "tigera-manager-lb" {
   metadata {
     name      = "tigera-manager-lb"
@@ -98,12 +100,9 @@ resource "kubernetes_service" "tigera-manager-lb" {
     }
     type = "LoadBalancer"
   }
-
-  depends_on = [
-    helm_release.calico_enterprise
-  ]
 }
 
+# Network load balancer to expose the tigera-manager mcm service
 resource "kubernetes_service" "tigera-mcm-lb" {
   metadata {
     name      = "tigera-mcm-lb"
@@ -126,21 +125,55 @@ resource "kubernetes_service" "tigera-mcm-lb" {
     }
     type = "LoadBalancer"
   }
-
-  depends_on = [
-    helm_release.calico_enterprise
-  ]
 }
 
+# Calico Enterprise Multi Cluster Management endpoint
 resource "kubernetes_manifest" "managementcluster_tigera_secure" {
   manifest = {
     "apiVersion" = "operator.tigera.io/v1"
-    "kind" = "ManagementCluster"
+    "kind"       = "ManagementCluster"
     "metadata" = {
       "name" = "tigera-secure"
     }
     "spec" = {
-      "address" = "mcm.tigera-solutions.io:443"
+      "address" = "${local.multi_cluster_management_fqdn}:443"
     }
+  }
+}
+
+resource "kubernetes_service_account" "tigera_admin_team" {
+  metadata {
+    name      = "tigera-admin-team"
+    namespace = "default"
+  }
+  secret {
+    name = kubernetes_secret.tigera_admin_team.metadata.0.name
+  }
+}
+
+resource "kubernetes_secret" "tigera_admin_team" {
+  metadata {
+    name      = "tigera-admin-team"
+    namespace = "default"
+    annotations = {
+      "kubernetes.io/service-account.name" = "tigera-admin-team"
+    }
+  }
+  type = "kubernetes.io/service-account-token"
+}
+
+resource "kubernetes_cluster_role_binding" "tigera_admin_team_access" {
+  metadata {
+    name = "terraform-admin-team-access"
+  }
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = "tigera-network-admin"
+  }
+  subject {
+    kind      = "ServiceAccount"
+    name      = "tigera-admin-team"
+    namespace = "default"
   }
 }

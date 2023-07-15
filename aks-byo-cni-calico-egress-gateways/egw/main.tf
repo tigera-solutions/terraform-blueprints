@@ -27,27 +27,11 @@ locals {
   cluster_client_certificate = data.terraform_remote_state.azure_tfstate.outputs.cluster_client_certificate
   cluster_client_key         = data.terraform_remote_state.azure_tfstate.outputs.cluster_client_key
   cluster_kube_config        = data.terraform_remote_state.azure_tfstate.outputs.cluster_kube_config
-  pod_cidr                   = var.pod_cidr
-  calico_version             = var.calico_version
-  calico_encap               = "VXLAN"
 }
 
 ################################################################################
 # Calico Resources
 ################################################################################
-
-resource "helm_release" "calico" {
-  name             = "calico"
-  chart            = "tigera-operator"
-  repository       = "https://docs.projectcalico.org/charts"
-  version          = local.calico_version
-  namespace        = "tigera-operator"
-  create_namespace = true
-  values = [templatefile("${path.module}/helm_values/values-calico.yaml", {
-    pod_cidr     = "${local.pod_cidr}"
-    calico_encap = "${local.calico_encap}"
-  })]
-}
 
 resource "kubernetes_manifest" "bgpconfiguration_default" {
   manifest = {
@@ -62,9 +46,6 @@ resource "kubernetes_manifest" "bgpconfiguration_default" {
       "nodeToNodeMeshEnabled" = false
     }
   }
-  depends_on = [
-    helm_release.calico
-  ]
 }
 
 resource "kubernetes_manifest" "bgppeer_peer_with_route_reflectors" {
@@ -79,10 +60,6 @@ resource "kubernetes_manifest" "bgppeer_peer_with_route_reflectors" {
       "peerSelector" = "route-reflector == 'true'"
     }
   }
-
-  depends_on = [
-    helm_release.calico
-  ]
 }
 
 resource "kubernetes_manifest" "bgppeer_azure_route_server_a" {
@@ -100,9 +77,6 @@ resource "kubernetes_manifest" "bgppeer_azure_route_server_a" {
       "reachableBy" = "10.1.0.1"
     }
   }
-  depends_on = [
-    helm_release.calico
-  ]
 }
 
 resource "kubernetes_manifest" "bgppeer_azure_route_server_b" {
@@ -120,7 +94,4 @@ resource "kubernetes_manifest" "bgppeer_azure_route_server_b" {
       "reachableBy" = "10.1.0.1"
     }
   }
-  depends_on = [
-    helm_release.calico
-  ]
 }

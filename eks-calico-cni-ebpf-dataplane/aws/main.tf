@@ -93,6 +93,8 @@ module "eks" {
   subnet_ids                = slice(module.vpc.private_subnets, 0, 2)
   cluster_service_ipv4_cidr = local.cluster_service_ipv4_cidr
 
+  create_cloudwatch_log_group = false
+
   eks_managed_node_groups = {
     calico = {
       instance_types = ["t3.2xlarge"]

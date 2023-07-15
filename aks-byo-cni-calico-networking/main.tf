@@ -15,7 +15,7 @@ terraform {
 data "azurerm_kubernetes_cluster" "credentials" {
   depends_on          = [azurerm_kubernetes_cluster.aks]
   name                = var.cluster_name
-  resource_group_name = var.cluster_name
+  resource_group_name = azurerm_resource_group.vnet.name
 }
 
 provider "kubernetes" {

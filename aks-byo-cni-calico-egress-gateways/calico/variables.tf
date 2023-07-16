@@ -7,5 +7,5 @@ variable "pod_cidr" {
 variable "calico_version" {
   description = "Calico Open Source release version"
   type        = string
-  default     = "3.26.1"
+  default     = "3.25.1"
 }

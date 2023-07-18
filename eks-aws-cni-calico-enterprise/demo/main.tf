@@ -141,6 +141,7 @@ resource "kubernetes_manifest" "managementcluster_tigera_secure" {
   }
 }
 
+# ServiceAccount for us to Login to the Tigera Manager UI
 resource "kubernetes_service_account" "tigera_admin_team" {
   metadata {
     name      = "tigera-admin-team"
@@ -151,6 +152,7 @@ resource "kubernetes_service_account" "tigera_admin_team" {
   }
 }
 
+# ServiceAccount token for authentication
 resource "kubernetes_secret" "tigera_admin_team" {
   metadata {
     name      = "tigera-admin-team"
@@ -162,6 +164,7 @@ resource "kubernetes_secret" "tigera_admin_team" {
   type = "kubernetes.io/service-account-token"
 }
 
+# Give tigera-admin-team administrative rights in the Tigera Manager UI
 resource "kubernetes_cluster_role_binding" "tigera_admin_team_access" {
   metadata {
     name = "terraform-admin-team-access"

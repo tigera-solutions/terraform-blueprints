@@ -102,4 +102,13 @@ resource "azurerm_firewall_network_rule_collection" "allowed_network_rules" {
     destination_addresses = ["*"]
     protocols         = ["TCP"]
   }
+
+  rule {
+    description       = "allow access to calico cloud"
+    name              = "allow access to calico cloud"
+    source_addresses  = ["*"]
+    destination_ports = ["9000"]
+    destination_addresses = ["*"]
+    protocols         = ["TCP"]
+  }
 }

@@ -147,9 +147,6 @@ resource "kubernetes_service_account" "tigera_admin_team" {
     name      = "tigera-admin-team"
     namespace = "default"
   }
-  secret {
-    name = kubernetes_secret.tigera_admin_team.metadata.0.name
-  }
 }
 
 # ServiceAccount token for authentication
@@ -162,6 +159,10 @@ resource "kubernetes_secret" "tigera_admin_team" {
     }
   }
   type = "kubernetes.io/service-account-token"
+
+  depends_on = [
+    kubernetes_service_account.tigera_admin_team,
+  ]
 }
 
 # Give tigera-admin-team administrative rights in the Tigera Manager UI
@@ -179,4 +180,8 @@ resource "kubernetes_cluster_role_binding" "tigera_admin_team_access" {
     name      = "tigera-admin-team"
     namespace = "default"
   }
+
+  depends_on = [
+    kubernetes_service_account.tigera_admin_team,
+  ]
 }

@@ -115,7 +115,7 @@ module "eks_blueprints_addons" {
     name       = "ingress"
     chart      = "ingress-nginx"
     repository = "https://kubernetes.github.io/ingress-nginx"
-    version    = "v4.5.2"
+    version    = "v4.7.1"
     namespace  = "ingress"
     values     = [templatefile("${path.module}/helm_values/values-nginx-ingress.yaml", {})]
   }

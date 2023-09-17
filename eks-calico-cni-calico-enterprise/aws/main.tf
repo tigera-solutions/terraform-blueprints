@@ -35,19 +35,21 @@ data "aws_eks_cluster_auth" "this" {
 data "aws_availability_zones" "available" {}
 
 locals {
-  name                          = var.name
-  region                        = var.region
-  vpc_cidr                      = var.vpc_cidr
-  secondary_vpc_cidr            = var.secondary_vpc_cidr
-  cluster_service_ipv4_cidr     = var.cluster_service_ipv4_cidr
-  azs                           = slice(data.aws_availability_zones.available.names, 0, 2)
-  desired_size                  = var.desired_size
-  key_name                      = var.ssh_keyname
-  cluster_version               = var.cluster_version
-  pod_cidr                      = var.pod_cidr
-  calico_encap                  = "VXLAN"
-  calico_enterprise_pull_secret = data.local_sensitive_file.calico_enterprise_pull_secret.content
-  calico_enterprise_version     = var.calico_enterprise_version
+  name                              = var.name
+  region                            = var.region
+  vpc_cidr                          = var.vpc_cidr
+  secondary_vpc_cidr                = var.secondary_vpc_cidr
+  cluster_service_ipv4_cidr         = var.cluster_service_ipv4_cidr
+  azs                               = slice(data.aws_availability_zones.available.names, 0, 2)
+  desired_size                      = var.desired_size
+  key_name                          = var.ssh_keyname
+  cluster_version                   = var.cluster_version
+  pod_cidr                          = var.pod_cidr
+  calico_encap                      = "VXLAN"
+  calico_enterprise_pull_secret     = data.local_sensitive_file.calico_enterprise_pull_secret.content
+  calico_enterprise_manager_sslcert = data.local_sensitive_file.calico_enterprise_manager_sslcert.content
+  calico_enterprise_manager_sslkey  = data.local_sensitive_file.calico_enterprise_manager_sslkey.content
+  calico_enterprise_version         = var.calico_enterprise_version
 
   kubeconfig = yamlencode({
     apiVersion      = "v1"
@@ -217,6 +219,23 @@ module "eks_blueprints_addons" {
   ]
 }
 
+resource "kubernetes_secret" "nginx_ingress_tls_secret" {
+  metadata {
+    name        = "tls-secret"
+    namespace   = "ingress"
+    annotations = {}
+  }
+  type = "kubernetes.io/tls"
+  data = {
+    "tls.crt" : "${local.calico_enterprise_manager_sslcert}"
+    "tls.key" : "${local.calico_enterprise_manager_sslkey}"
+  }
+
+  depends_on = [
+    module.eks_blueprints_addons,
+  ]
+}
+
 ################################################################################
 # Calico Resources
 ################################################################################
@@ -280,6 +299,23 @@ resource "null_resource" "remove_aws_node_ds" {
 
   depends_on = [
     module.eks
+  ]
+}
+
+resource "kubernetes_secret" "calico_enterprise_manager_tls_secret" {
+  metadata {
+    name        = "manager-tls"
+    namespace   = "tigera-operator"
+    annotations = {}
+  }
+  type = "kubernetes.io/tls"
+  data = {
+    "tls.crt" : "${local.calico_enterprise_manager_sslcert}"
+    "tls.key" : "${local.calico_enterprise_manager_sslkey}"
+  }
+
+  depends_on = [
+    kubernetes_namespace.tigera-operator
   ]
 }
 

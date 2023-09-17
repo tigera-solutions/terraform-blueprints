@@ -3,9 +3,9 @@ output "tigera_manager_lb_url" {
 }
 
 output "get_tigera_admin_team_token" {
-  value    = "kubectl get secret tigera-admin-team -o go-template='{{.data.token | base64decode}}'" 
+  value = "kubectl get secret tigera-admin-team -o go-template='{{.data.token | base64decode}}'"
 }
 
 output "get_kibana_elastic_token" {
-  value    = "kubectl get -n tigera-elasticsearch secret tigera-secure-es-elastic-user -o go-template='{{.data.elastic | base64decode}}'"
+  value = "kubectl get -n tigera-elasticsearch secret tigera-secure-es-elastic-user -o go-template='{{.data.elastic | base64decode}}'"
 }

@@ -2,4 +2,4 @@
 
 Collection of Reference Architectures in Terraform
 
-![infra](media/aws-network.gif)
+![infra](media/aws-network.png)

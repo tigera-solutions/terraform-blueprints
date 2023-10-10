@@ -207,7 +207,7 @@ resource "null_resource" "remove_aws_node_ds" {
 }
 
 ################################################################################
-# Supporting Resources
+# AWS Virtual Private Cloud Pattern
 ################################################################################
 
 module "vpc" {

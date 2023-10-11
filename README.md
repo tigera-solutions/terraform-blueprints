@@ -1,12 +1,12 @@
 # terraform-blueprints
 
-Collection of Reference Architectures in Terraform
+This repository houses a collection of reference architectures designed to enhance the security of containerized workloads.
 
+We will develop using a base of foundational reference architectures, each aligned with the Well-Architected frameworks and best practices specific to each Cloud platform.
 
-## Aws
+## AWS
 
 ![infra](media/aws-network.png)
-
 
 ## Azure
 

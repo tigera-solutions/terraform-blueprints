@@ -43,7 +43,7 @@ variable "cluster_service_ipv4_cidr" {
 variable "cluster_version" {
   description = "Kubernetes version for this cluster"
   type        = string
-  default     = "1.26"
+  default     = "1.28"
 }
 
 variable "calico_version" {
@@ -56,4 +56,10 @@ variable "desired_size" {
   description = "Number of cluster nodes"
   type        = string
   default     = "2"
+}
+
+variable "instance_type" {
+  description = "Cluster node AWS EC2 instance type"
+  type        = string
+  default     = "m5.2xlarge"
 }

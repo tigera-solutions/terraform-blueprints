@@ -52,6 +52,12 @@ variable "calico_enterprise_version" {
   default     = "3.18.0-1"
 }
 
+variable "calico_enterprise_helm_chart" {
+  description = "Calico Enterprise Helm Chart"
+  type        = string
+  default     = "https://downloads.tigera.io/ee/charts/tigera-operator-v3.18.0-2.0-0.tgz"
+}
+
 variable "desired_size" {
   description = "Number of cluster nodes"
   type        = string

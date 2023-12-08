@@ -44,6 +44,9 @@ locals {
   oidc_provider_arn                  = data.terraform_remote_state.aws_tfstate.outputs.oidc_provider_arn
   cluster_certificate_authority_data = data.terraform_remote_state.aws_tfstate.outputs.cluster_certificate_authority_data
   region                             = data.aws_region.current.name
+  webhook_bind_port_metrics_server   = 30000
+  webhook_bind_port_awslb_controller = 30001
+
   kubeconfig = yamlencode({
     apiVersion      = "v1"
     kind            = "Config"
@@ -92,7 +95,9 @@ module "eks_blueprints_addons" {
     chart_version = "3.10.0"
     repository    = "https://kubernetes-sigs.github.io/metrics-server/"
     namespace     = "kube-system"
-    values        = [templatefile("${path.module}/helm_values/values-metrics-server.yaml", {})]
+    values = [templatefile("${path.module}/helm_values/values-metrics-server.yaml", {
+      webhook_bind_port_metrics_server = "${local.webhook_bind_port_metrics_server}"
+    })]
   }
 
   enable_aws_load_balancer_controller = true
@@ -103,8 +108,9 @@ module "eks_blueprints_addons" {
     version    = "1.4.8"
     namespace  = "kube-system"
     values = [templatefile("${path.module}/helm_values/values-aws-load-balancer-controller.yaml", {
-      clusterName = "${local.cluster_name}"
-      region      = "${local.region}"
+      clusterName                        = "${local.cluster_name}"
+      region                             = "${local.region}"
+      webhook_bind_port_awslb_controller = "${local.webhook_bind_port_awslb_controller}"
     })]
   }
 

@@ -6,3 +6,5 @@ region: ${region}
 # API server unable to communicate with aws-load-balancer-controller. As an example, this is required
 # if you use Calico CNI on EKS
 hostNetwork: true
+
+webhookBindPort: ${webhook_bind_port_awslb_controller} 

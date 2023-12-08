@@ -5,4 +5,4 @@ hostNetwork:
   # API server unable to communicate with metrics-server. As an example, this is required
   # if you use Calico CNI on EKS
   enabled: true
-containerPort: 30000
+containerPort: ${webhook_bind_port_metrics_server}

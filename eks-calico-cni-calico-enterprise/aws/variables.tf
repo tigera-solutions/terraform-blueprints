@@ -46,12 +46,6 @@ variable "cluster_version" {
   default     = "1.26"
 }
 
-variable "calico_enterprise_version" {
-  description = "Calico Enterprise release version"
-  type        = string
-  default     = "3.18.0-1"
-}
-
 variable "calico_enterprise_helm_chart" {
   description = "Calico Enterprise Helm Chart"
   type        = string

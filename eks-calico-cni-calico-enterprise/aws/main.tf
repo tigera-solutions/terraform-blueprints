@@ -49,7 +49,6 @@ locals {
   calico_enterprise_pull_secret     = data.local_sensitive_file.calico_enterprise_pull_secret.content
   calico_enterprise_manager_sslcert = data.local_sensitive_file.calico_enterprise_manager_sslcert.content
   calico_enterprise_manager_sslkey  = data.local_sensitive_file.calico_enterprise_manager_sslkey.content
-  calico_enterprise_version         = var.calico_enterprise_version
   calico_enterprise_helm_chart      = var.calico_enterprise_helm_chart
 
   kubeconfig = yamlencode({
@@ -249,7 +248,7 @@ resource "kubernetes_namespace" "tigera-operator" {
 
 resource "helm_release" "calico_enterprise" {
   name      = "calico-enterprise"
-  chart     = "${local.calico_enterprise_helm_chart}"
+  chart     = local.calico_enterprise_helm_chart
   namespace = "tigera-operator"
   values = [templatefile("${path.module}/helm_values/values-calico-enterprise.yaml", {
     calico_enterprise_pull_secret = local.calico_enterprise_pull_secret

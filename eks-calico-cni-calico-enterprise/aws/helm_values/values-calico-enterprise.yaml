@@ -15,6 +15,10 @@ installation:
     - cidr: ${pod_cidr}
       encapsulation: ${calico_encap}
 
+tigera-prometheus-operator:
+  imagePullSecrets:
+    tigera-pull-secret: '${calico_enterprise_pull_secret}'
+
 logStorage:
   enabled: true
   nodes:

@@ -57,3 +57,9 @@ variable "desired_size" {
   type        = string
   default     = "4"
 }
+
+variable "instance_type" {
+  description = "Cluster node AWS EC2 instance type"
+  type        = string
+  default     = "m5.2xlarge"
+}

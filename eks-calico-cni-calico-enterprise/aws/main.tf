@@ -42,6 +42,7 @@ locals {
   cluster_service_ipv4_cidr         = var.cluster_service_ipv4_cidr
   azs                               = slice(data.aws_availability_zones.available.names, 0, 2)
   desired_size                      = var.desired_size
+  instance_type                     = var.instance_type
   key_name                          = var.ssh_keyname
   cluster_version                   = var.cluster_version
   pod_cidr                          = var.pod_cidr
@@ -101,7 +102,7 @@ module "eks" {
 
   eks_managed_node_groups = {
     calico = {
-      instance_types = ["t3.2xlarge"]
+      instance_types = ["${local.instance_type}"]
 
       min_size     = 0
       max_size     = 8

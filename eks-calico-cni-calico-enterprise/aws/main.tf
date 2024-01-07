@@ -104,7 +104,7 @@ module "eks" {
   eks_managed_node_groups = {
     calico = {
       instance_types = ["${local.instance_type}"]
-      ami_type = "${local.ami_type}"
+      ami_type       = "${local.ami_type}"
 
       min_size     = 0
       max_size     = 8

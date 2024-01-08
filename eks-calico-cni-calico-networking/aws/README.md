@@ -21,6 +21,15 @@ terraform apply
 
 Enter `yes` at command prompt to apply
 
+To provision this example on ARM based compute:
+
+```
+terraform init
+terraform apply --auto-approve --var instance_type="m7g.2xlarge" --var ami_type="AL2_ARM_64"
+```
+
+Enter `yes` at command prompt to apply
+
 ### Validate
 
 1. Run `update-kubeconfig` command:

@@ -69,3 +69,9 @@ variable "ami_type" {
   type        = string
   default     = "AL2_x86_64"
 }
+
+variable "create_enterprise_manager_sslcerts" {
+  description = "Determines whether to create tigera-manager ssl certificates"
+  type        = bool
+  default     = false
+}

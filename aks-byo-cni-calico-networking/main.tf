@@ -119,7 +119,7 @@ resource "helm_release" "calico" {
   name       = "calico"
   chart      = "tigera-operator"
   repository = "https://docs.projectcalico.org/charts"
-  version    = "v3.25.1"
+  version    = "v3.26.4"
   namespace  = "tigera-operator"
   values = [templatefile("${path.module}/helm_values/values-calico.yaml", {
     pod_cidr = "${var.cluster_pod_cidr}"

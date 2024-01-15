@@ -89,5 +89,6 @@ To teardown and remove the resources created in this example:
 
 ```sh
 terraform state rm helm_release.calico_enterprise
+terraform state rm kubernetes_namespace.tigera-operator
 terraform destroy --auto-approve
 ```

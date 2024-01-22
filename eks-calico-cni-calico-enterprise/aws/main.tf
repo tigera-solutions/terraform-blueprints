@@ -51,8 +51,8 @@ locals {
   calico_network_bgp                 = var.calico_network_bgp
   calico_enterprise_pull_secret      = data.local_sensitive_file.calico_enterprise_pull_secret.content
   create_enterprise_manager_sslcerts = var.create_enterprise_manager_sslcerts
-  calico_enterprise_manager_sslcert  = data.local_sensitive_file.calico_enterprise_manager_sslcert.content
-  calico_enterprise_manager_sslkey   = data.local_sensitive_file.calico_enterprise_manager_sslkey.content
+  calico_enterprise_manager_sslcert  = one(data.local_sensitive_file.calico_enterprise_manager_sslcert[*].content)
+  calico_enterprise_manager_sslkey   = one(data.local_sensitive_file.calico_enterprise_manager_sslkey[*].content)
   calico_enterprise_helm_chart       = var.calico_enterprise_helm_chart
 
 
@@ -261,6 +261,7 @@ resource "helm_release" "calico_enterprise" {
     calico_enterprise_pull_secret = local.calico_enterprise_pull_secret
     pod_cidr                      = "${local.pod_cidr}"
     calico_encap                  = "${local.calico_encap}"
+    calico_network_bgp            = "${local.calico_network_bgp}"
   })]
 
   depends_on = [

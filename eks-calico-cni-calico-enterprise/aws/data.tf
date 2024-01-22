@@ -1,11 +1,11 @@
 data "local_sensitive_file" "calico_enterprise_pull_secret" {
-  filename = "/Users/sabo/Source/demo/docker_cfg.json"
+  filename = "${var.calico_enterprise_pull_secret_path}"
 }
 
 data "local_sensitive_file" "calico_enterprise_manager_sslcert" {
-  filename = "/Users/sabo/Source/demo/STAR_tigera-solutions_io.crt"
+  filename = "${var.calico_enterprise_manager_sslcert_path}"
 }
 
 data "local_sensitive_file" "calico_enterprise_manager_sslkey" {
-  filename = "/Users/sabo/Source/demo/STAR_tigera-solutions_io.key"
+  filename = "${var.calico_enterprise_manager_sslkey_path}"
 }

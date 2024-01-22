@@ -47,7 +47,8 @@ locals {
   key_name                           = var.ssh_keyname
   cluster_version                    = var.cluster_version
   pod_cidr                           = var.pod_cidr
-  calico_encap                       = "VXLAN"
+  calico_encap                       = var.calico_encap
+  calico_network_bgp                 = var.calico_network_bgp
   calico_enterprise_pull_secret      = data.local_sensitive_file.calico_enterprise_pull_secret.content
   create_enterprise_manager_sslcerts = var.create_enterprise_manager_sslcerts
   calico_enterprise_manager_sslcert  = data.local_sensitive_file.calico_enterprise_manager_sslcert.content

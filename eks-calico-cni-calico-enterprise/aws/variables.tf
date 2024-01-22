@@ -40,6 +40,18 @@ variable "cluster_service_ipv4_cidr" {
   default     = "10.9.0.0/16"
 }
 
+variable "calico_encap" {
+  description = "Calico network overlay type"
+  type        = string
+  default     = "VXLAN"
+}
+
+variable "calico_network_bgp" {
+  description = "Calico network BGP"
+  type        = string
+  default     = "Disabled"
+}
+
 variable "cluster_version" {
   description = "Kubernetes version for this cluster"
   type        = string
@@ -74,4 +86,22 @@ variable "create_enterprise_manager_sslcerts" {
   description = "Determines whether to create tigera-manager ssl certificates"
   type        = bool
   default     = false
+}
+
+variable "calico_enterprise_pull_secret_path" {
+  description = "Path to a local file that contains Calico Enterprise pull secret"
+  type        = string
+  default     = "/Users/Shared/docker_cfg.json"
+}
+
+variable "calico_enterprise_manager_sslcert_path" {
+  description = "Path to a local file that represents Calico Enterprise manager SSL cert (file can be empty but has to exist)"
+  type        = string
+  default     = "/Users/Shared/STAR_tigera-solutions_io.crt"
+}
+
+variable "calico_enterprise_manager_sslkey_path" {
+  description = "Path to a local file that represents Calico Enterprise manager SSL cert key (file can be empty but has to exist)"
+  type        = string
+  default     = "/Users/Shared/STAR_tigera-solutions_io.key"
 }

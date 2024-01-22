@@ -10,7 +10,7 @@ installation:
     ipam:
       type: Calico
   calicoNetwork:
-    bgp: Disabled
+    bgp: ${calico_network_bgp}
     ipPools:
     - cidr: ${pod_cidr}
       encapsulation: ${calico_encap}

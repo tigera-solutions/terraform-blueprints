@@ -48,7 +48,7 @@ controller:
   metrics:
     enabled: true
 defaultBackend:
-  enabled: true
+  enabled: false
 serviceAccount:
   create: true
   name: nginx-ingress-service-account

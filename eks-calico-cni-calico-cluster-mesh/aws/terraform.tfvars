@@ -1,10 +1,9 @@
-name            = "example"
 region1         = "us-east-1"
 region2         = "us-east-1"
 vpc1_cidr       = "10.0.0.0/16"
 vpc2_cidr       = "10.1.0.0/16"
-cluster1_name   = "blue-us-east-1"
-cluster2_name   = "green-us-east-1"
+cluster1_name   = "blue"
+cluster2_name   = "green"
 cluster_version = "1.27"
 instance_type   = "m5.xlarge"
 desired_size    = 3

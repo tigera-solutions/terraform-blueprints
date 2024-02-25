@@ -88,6 +88,7 @@ ip-10-0-191-7.ec2.internal     Ready    <none>   10m   v1.24.10-eks-48e63af
 To teardown and remove the resources created in this example:
 
 ```sh
-terraform state rm helm_release.calico
+terraform state rm helm_release.calico_cluster1
+terraform state rm helm_release.calico_cluster2
 terraform destroy --auto-approve
 ```

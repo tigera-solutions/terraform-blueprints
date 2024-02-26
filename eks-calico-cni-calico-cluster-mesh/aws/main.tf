@@ -100,7 +100,7 @@ module "vpc1" {
   providers = { aws = aws.region1 }
   version   = ">= 5.0.0"
 
-  name = "${var.cluster1_name}"
+  name = var.cluster1_name
   cidr = var.vpc1_cidr
   azs  = local.azs_region1
 
@@ -139,7 +139,7 @@ module "vpc2" {
   providers = { aws = aws.region2 }
   version   = ">= 5.0.0"
 
-  name = "${var.cluster2_name}"
+  name = var.cluster2_name
   cidr = var.vpc2_cidr
   azs  = local.azs_region2
 
@@ -193,7 +193,7 @@ resource "aws_vpc_peering_connection_accepter" "accepter" {
   auto_accept               = true
 
   tags = {
-    Name = "Accept VPC Peering between Region1 and Region2"
+    Name = "Accept VPC Peering between ${var.cluster1_name} and ${var.cluster2_name}"
   }
 }
 

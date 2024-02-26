@@ -178,10 +178,22 @@ resource "aws_vpc_peering_connection" "vpc_peering" {
 
   vpc_id      = module.vpc1.vpc_id
   peer_vpc_id = module.vpc2.vpc_id
-  auto_accept = true
+  peer_region = var.region2
+  auto_accept = false
 
   tags = {
     Name = "VPC Peering between ${var.cluster1_name} and ${var.cluster2_name}"
+  }
+}
+
+# Accept the VPC Peering Connection in the accepter region
+resource "aws_vpc_peering_connection_accepter" "accepter" {
+  provider                  = aws.region2
+  vpc_peering_connection_id = aws_vpc_peering_connection.vpc_peering.id
+  auto_accept               = true
+
+  tags = {
+    Name = "Accept VPC Peering between Region1 and Region2"
   }
 }
 

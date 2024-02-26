@@ -1,6 +1,6 @@
-# Calico CNI with Custom Networking
+# AWS EKS Calico Cluster Mesh
 
-This example demonstrates how to provision an EKS cluster using the Calico CNI with custom networking.
+This example demonstrates how to provision two AWS EKS clusters, each within its own Virtual Private Cloud (VPC), peered together to enable direct network communication between the clusters. The clusters utilize the Calico Container Network Interface (CNI) plugin for network policy enforcement and pod networking, with custom networking configurations to facilitate inter-cluster communication. This setup allows for seamless connectivity between pods across the two peered VPCs, making it ideal for scenarios requiring cross-cluster communication, such as distributed applications or disaster recovery setups. Routing rules are configured to ensure that traffic between the clusters flows through the VPC peering connection, leveraging Calico's network policies for enhanced security and control over inter-cluster traffic.
 
 ## Prerequisites:
 
@@ -11,6 +11,25 @@ First, ensure that you have installed the following tools locally.
 3. [terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli)
 
 ### Deploy
+
+Examine [terraform.tfvars](terraform.tfvars)`.
+
+```
+region1         = "us-east-1"
+region2         = "us-west-2"
+vpc1_cidr       = "10.0.0.0/16"
+vpc2_cidr       = "10.1.0.0/16"
+cluster1_name   = "iad"
+cluster2_name   = "pdx"
+cluster_version = "1.27"
+instance_type   = "m5.xlarge"
+desired_size    = 3
+ssh_keyname     = "your-ssh-keyname"
+pod_cidr1       = "192.168.1.0/24"
+pod_cidr2       = "192.168.2.0/24"
+calico_version  = "v3.26.4"
+calico_encap    = "VXLAN"
+```
 
 To provision this example:
 
@@ -35,7 +54,8 @@ Enter `yes` at command prompt to apply
 1. Run `update-kubeconfig` command:
 
 ```sh
-aws eks --region <REGION> update-kubeconfig --name <CLUSTER_NAME> --alias <CLUSTER_NAME>
+aws eks --region <REGION1> update-kubeconfig --name <CLUSTER_NAME1> --alias <CLUSTER_NAME1>
+aws eks --region <REGION2> update-kubeconfig --name <CLUSTER_NAME2> --alias <CLUSTER_NAME2>
 ```
 
 2. View the pods that were created:

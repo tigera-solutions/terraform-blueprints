@@ -103,6 +103,51 @@ ip-10-0-182-227.ec2.internal   Ready    <none>   11m   v1.24.10-eks-48e63af
 ip-10-0-191-7.ec2.internal     Ready    <none>   10m   v1.24.10-eks-48e63af
 ```
 
+### Join Clusters to Calico Cloud
+
+### Setup Calico Cluster Mesh
+
+```
+sh setup-mesh.sh
+```
+
+```
+Setting up mesh between iad and pdx...
+Switched to context "iad".
+serviceaccount/tigera-federation-remote-cluster created
+clusterrole.rbac.authorization.k8s.io/tigera-federation-remote-cluster created
+clusterrolebinding.rbac.authorization.k8s.io/tigera-federation-remote-cluster created
+secret/tigera-federation-remote-cluster created
+secret/pdx-secret created
+remoteclusterconfiguration.projectcalico.org/pdx created
+Switched to context "pdx".
+role.rbac.authorization.k8s.io/remote-cluster-secret-access created
+rolebinding.rbac.authorization.k8s.io/remote-cluster-secret-access created
+Mesh setup from iad to pdx completed
+Setting up mesh between pdx and iad...
+Switched to context "pdx".
+serviceaccount/tigera-federation-remote-cluster created
+clusterrole.rbac.authorization.k8s.io/tigera-federation-remote-cluster created
+clusterrolebinding.rbac.authorization.k8s.io/tigera-federation-remote-cluster created
+secret/tigera-federation-remote-cluster created
+secret/iad-secret created
+remoteclusterconfiguration.projectcalico.org/iad created
+Switched to context "iad".
+role.rbac.authorization.k8s.io/remote-cluster-secret-access created
+rolebinding.rbac.authorization.k8s.io/remote-cluster-secret-access created
+Mesh setup from pdx to iad completed
+```
+
+```
+kubectl --context iad logs deployment/calico-typha -n calico-system | grep "Sending in-sync update"
+kubectl --context pdx logs deployment/calico-typha -n calico-system | grep "Sending in-sync update"
+```
+
+```
+2024-02-27 01:51:06.156 [INFO][13] wrappedcallbacks.go 487: Sending in-sync update for RemoteClusterConfiguration(pdx)
+2024-02-27 01:51:03.300 [INFO][13] wrappedcallbacks.go 487: Sending in-sync update for RemoteClusterConfiguration(iad)
+```
+
 ### Destroy
 
 To teardown and remove the resources created in this example:

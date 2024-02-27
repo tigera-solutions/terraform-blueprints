@@ -6,7 +6,7 @@ This example demonstrates how to provision two AWS EKS clusters, each within its
 
 ## Walk Through
 
-We'll use Terraform, an infrastructure-as-code tool, to deploy this reference architecture automatically. We'll walk you through the deployment process and then demonstrate how to utilize [Egress Gateways with Calico on AWS](https://docs.tigera.io/calico-cloud/networking/egress/egress-gateway-aws)
+We'll use Terraform, an infrastructure-as-code tool, to deploy this reference architecture automatically. We'll walk you through the deployment process and then demonstrate how to utilize [Calico Cluster Mesh on AWS](https://docs.tigera.io/calico-enterprise/latest/multicluster/federation/overview)
 
 ### Prerequisites:
 

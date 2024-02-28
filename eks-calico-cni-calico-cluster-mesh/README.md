@@ -170,53 +170,73 @@ kubectl apply -f manifests
 
 #### 2. Implement Calico Federated Services
 Test the configuration of each Service:
+
 ```sh
-WIP
+kubectl --context pdx get svc
 ```
 
-```
-$ kubectl --context pdx get svc
+```sh
 NAME                TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
 kubernetes          ClusterIP   172.20.0.1   <none>        443/TCP   20h
 web-iad-federated   ClusterIP   None         <none>        80/TCP    46m
 web-pdx             ClusterIP   None         <none>        80/TCP    179m
 ```
 
-```
-$ kubectl --context iad get svc
-NAME                TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
-kubernetes          ClusterIP   172.20.0.1   <none>        443/TCP   20h
-web-iad             ClusterIP   None         <none>        80/TCP    179m
-web-pdx-federated   ClusterIP   None         <none>        80/TCP    30m
+```sh
+kubectl --context pdx exec -it netshoot -- ping -c 1 web-iad-federated
 ```
 
-```
-$ kubectl --context pdx exec -it netshoot -- ping -c 1 web-iad-federated
+```sh
 PING web-iad-federated.default.svc.cluster.local (192.168.1.141) 56(84) bytes of data.
 64 bytes from web-iad-0.web-iad-federated.default.svc.cluster.local (192.168.1.141): icmp_seq=1 ttl=125 time=58.7 ms
+
 --- web-iad-federated.default.svc.cluster.local ping statistics ---
 1 packets transmitted, 1 received, 0% packet loss, time 0ms
 rtt min/avg/max/mdev = 58.659/58.659/58.659/0.000 ms
 ```
 
+```sh
+kubectl --context pdx exec -it netshoot -- ping -c 1 web-pdx
 ```
-$ kubectl --context pdx exec -it netshoot -- ping -c 1 web-pdx
+
+```sh
 PING web-pdx.default.svc.cluster.local (192.168.2.138) 56(84) bytes of data.
 64 bytes from web-pdx-0.web-pdx.default.svc.cluster.local (192.168.2.138): icmp_seq=1 ttl=125 time=0.863 ms
 
 --- web-pdx.default.svc.cluster.local ping statistics ---
 1 packets transmitted, 1 received, 0% packet loss, time 0ms
 rtt min/avg/max/mdev = 0.863/0.863/0.863/0.000 ms
->>> (~/Source/terraform-blueprints/eks-calico-cni-calico-cluster-mesh)
-$ kubectl --context iad exec -it netshoot -- ping -c 1 web-pdx-federated
+```
+
+```sh
+kubectl --context iad get svc
+```
+
+```sh
+NAME                TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
+kubernetes          ClusterIP   172.20.0.1   <none>        443/TCP   20h
+web-iad             ClusterIP   None         <none>        80/TCP    179m
+web-pdx-federated   ClusterIP   None         <none>        80/TCP    30m
+```
+
+```sh
+kubectl --context iad exec -it netshoot -- ping -c 1 web-pdx-federated
+```
+
+```sh
 PING web-pdx-federated.default.svc.cluster.local (192.168.2.138) 56(84) bytes of data.
 64 bytes from web-pdx-0.web-pdx-federated.default.svc.cluster.local (192.168.2.138): icmp_seq=1 ttl=125 time=65.1 ms
 
 --- web-pdx-federated.default.svc.cluster.local ping statistics ---
 1 packets transmitted, 1 received, 0% packet loss, time 0ms
 rtt min/avg/max/mdev = 65.090/65.090/65.090/0.000 ms
->>> (~/Source/terraform-blueprints/eks-calico-cni-calico-cluster-mesh)
-$ kubectl --context iad exec -it netshoot -- ping -c 1 web-iad
+```
+
+```sh
+kubectl --context iad exec -it netshoot -- ping -c 1 web-iad
+```
+
+```sh
 PING web-iad.default.svc.cluster.local (192.168.1.141) 56(84) bytes of data.
 64 bytes from web-iad-0.web-iad.default.svc.cluster.local (192.168.1.141): icmp_seq=1 ttl=125 time=0.569 ms
 

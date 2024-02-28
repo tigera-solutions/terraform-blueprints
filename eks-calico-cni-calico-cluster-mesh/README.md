@@ -149,7 +149,7 @@ Mesh setup from pdx to iad completed
 
 ## Validate the Deployment and Review the Results
 
-#### 1. Confirm both clusters are in-sync
+#### 1. Confirm Calico Cluster Mesh enabled clusters are in-sync
 Check logs for remote cluster connection status:
 ```sh
 kubectl --context iad logs deployment/calico-typha -n calico-system | grep "Sending in-sync update"
@@ -161,14 +161,16 @@ kubectl --context pdx logs deployment/calico-typha -n calico-system | grep "Send
 2024-02-27 01:51:03.300 [INFO][13] wrappedcallbacks.go 487: Sending in-sync update for RemoteClusterConfiguration(iad)
 ```
 
-#### 2. Deploy Database Statefulsets and Headless Service
+You should see similar messages for each of the clusters in your cluster mesh.
+
+#### 2. Deploy Statefulsets and Headless Services
 Return to the project root and apply the manifests:
 ```sh
 cd ..
 kubectl apply -f manifests
 ```
 
-#### 2. Implement Calico Federated Services
+#### 2. Implement Calico Federated Services for Calico Cluster Mesh
 Test the configuration of each Service:
 
 ```sh
@@ -182,19 +184,7 @@ web-iad-federated   ClusterIP   None         <none>        80/TCP    46m
 web-pdx             ClusterIP   None         <none>        80/TCP    179m
 ```
 
-```sh
-kubectl --context pdx exec -it netshoot -- ping -c 1 web-iad-federated
-```
-
-```sh
-PING web-iad-federated.default.svc.cluster.local (192.168.1.141) 56(84) bytes of data.
-64 bytes from web-iad-0.web-iad-federated.default.svc.cluster.local (192.168.1.141): icmp_seq=1 ttl=125 time=58.7 ms
-
---- web-iad-federated.default.svc.cluster.local ping statistics ---
-1 packets transmitted, 1 received, 0% packet loss, time 0ms
-rtt min/avg/max/mdev = 58.659/58.659/58.659/0.000 ms
-```
-
+Test connectivity to the `local` headless service in `PDX`
 ```sh
 kubectl --context pdx exec -it netshoot -- ping -c 1 web-pdx
 ```
@@ -208,6 +198,21 @@ PING web-pdx.default.svc.cluster.local (192.168.2.138) 56(84) bytes of data.
 rtt min/avg/max/mdev = 0.863/0.863/0.863/0.000 ms
 ```
 
+Test connectivity to the `federated` headless service in `IAD`
+```sh
+kubectl --context pdx exec -it netshoot -- ping -c 1 web-iad-federated
+```
+
+```sh
+PING web-iad-federated.default.svc.cluster.local (192.168.1.141) 56(84) bytes of data.
+64 bytes from web-iad-0.web-iad-federated.default.svc.cluster.local (192.168.1.141): icmp_seq=1 ttl=125 time=58.7 ms
+
+--- web-iad-federated.default.svc.cluster.local ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 58.659/58.659/58.659/0.000 ms
+```
+
+Test connectivity to the `local` headless service in `IAD`
 ```sh
 kubectl --context iad get svc
 ```
@@ -219,6 +224,7 @@ web-iad             ClusterIP   None         <none>        80/TCP    179m
 web-pdx-federated   ClusterIP   None         <none>        80/TCP    30m
 ```
 
+Test connectivity to the `federated` headless service in `IAD`
 ```sh
 kubectl --context iad exec -it netshoot -- ping -c 1 web-pdx-federated
 ```
@@ -244,7 +250,6 @@ PING web-iad.default.svc.cluster.local (192.168.1.141) 56(84) bytes of data.
 1 packets transmitted, 1 received, 0% packet loss, time 0ms
 rtt min/avg/max/mdev = 0.569/0.569/0.569/0.000 ms
 ```
-
 
 #### 6. Cleanup
 

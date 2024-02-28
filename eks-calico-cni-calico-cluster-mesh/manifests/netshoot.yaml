@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: netshoot
+  labels:
+    app: netshoot
+spec:
+  restartPolicy: Always
+  containers:
+    - name: netshoot
+      image: nicolaka/netshoot
+      imagePullPolicy: IfNotPresent
+      command:
+        - sleep
+        - infinity

@@ -60,6 +60,9 @@ contexts:
 current-context: $source_cluster-ctx
 EOF
 
+    # Set the context to the destination cluster
+    kubectl config use-context "$destination_cluster"
+
     # Create secret in the destination cluster
     kubectl delete secret $destination_cluster-secret -n $SECRET_NAMESPACE --ignore-not-found=true
     kubectl create secret generic $destination_cluster-secret -n $SECRET_NAMESPACE --from-literal=datastoreType=kubernetes --from-file=kubeconfig=$kubeconfig
@@ -79,7 +82,6 @@ spec:
 EOF
 
     # Apply RBAC resources for accessing secret if they haven't already been applied to this cluster
-    kubectl config use-context "$destination_cluster"
     local rbac_applied=$(kubectl get rolebindings.rbac.authorization.k8s.io -n $SECRET_NAMESPACE | grep remote-cluster-secret-access | wc -l)
     if [ "$rbac_applied" -eq 0 ]; then
         kubectl apply -f - <<EOFRBAC

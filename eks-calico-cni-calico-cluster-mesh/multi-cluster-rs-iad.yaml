@@ -2,10 +2,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: web-iad-federated
+  name: multi-cluster-rs-pdx
   annotations:
     federation.tigera.io/serviceSelector:
-      app == "web-iad"
+      app == "multi-cluster-rs-pdx"
 spec:
   ports:
   - port: 80
@@ -17,32 +17,32 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: web-pdx
+  name: multi-cluster-rs-iad
   labels:
-    app: web-pdx
+    app: multi-cluster-rs-iad
 spec:
   ports:
   - port: 80
     name: web
   clusterIP: None
   selector:
-    app: web-pdx
+    app: multi-cluster-rs-iad
 
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: web-pdx
+  name: multi-cluster-rs-iad
 spec:
   selector:
     matchLabels:
-      app: web-pdx
-  serviceName: "web-pdx"
+      app: multi-cluster-rs-iad
+  serviceName: "multi-cluster-rs-iad"
   replicas: 1
   template:
     metadata:
       labels:
-        app: web-pdx
+        app: multi-cluster-rs-iad
     spec:
       containers:
       - name: nginx

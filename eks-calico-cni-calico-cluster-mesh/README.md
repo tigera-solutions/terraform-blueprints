@@ -106,6 +106,12 @@ kubectl patch felixconfiguration default --type='merge' -p '{
 
 #### 2. Create the Cluster Mesh
 
+Run the `setup-mesh.sh` script:
+```sh
+cd ..
+sh setup-mesh.sh
+```
+
 The `setup-mesh.sh` script automates the creation of a Calico cluster mesh as outlined in the [Tigera documentation](https://docs.tigera.io/calico-cloud/multicluster/overview), enabling secure and efficient connections between multiple Kubernetes clusters. Below is a breakdown of the specific Kubernetes resources it creates and configures:
 
 1. **In the source cluster**, it:
@@ -118,12 +124,6 @@ The `setup-mesh.sh` script automates the creation of a Calico cluster mesh as ou
    - Creates a secret that includes the kubeconfig from the source cluster. This enables the destination cluster to securely communicate with the source cluster.
    - Configures a `RemoteClusterConfiguration` resource, which is used to manage the mesh connection settings and policies.
    - Applies specific RBAC roles and role bindings to allow designated components access to the secret, ensuring they can establish and maintain secure cross-cluster communication.
-
-Run the `setup-mesh.sh` script:
-```sh
-cd ..
-sh setup-mesh.sh
-```
 
 ```sh
 Setting up mesh between iad and pdx...

@@ -30,12 +30,11 @@ data "aws_eks_cluster_auth" "cluster2_auth" {
   name = module.eks_cluster2.cluster_name
 }
 
-# Local Variables for Slicing Availability Zones
+# Local Variables
 locals {
   azs_region1 = slice(data.aws_availability_zones.available_region1.names, 0, 2)
   azs_region2 = slice(data.aws_availability_zones.available_region2.names, 0, 2)
 
-  # Example static mapping if you know you have 2 route tables per VPC
   route_table_map_vpc1 = { for idx, rt_id in module.vpc1.private_route_table_ids : tostring(idx) => rt_id }
   route_table_map_vpc2 = { for idx, rt_id in module.vpc2.private_route_table_ids : tostring(idx) => rt_id }
 
@@ -277,6 +276,14 @@ module "eks_cluster1" {
       type        = "ingress"
       self        = true
     }
+    ingress_from_cluster2_vpc = {
+      description = "Allow VXLAN traffic from Cluster 2 VPC CIDR"
+      protocol    = "udp"
+      from_port   = 4789
+      to_port     = 4789
+      type        = "ingress"
+      cidr_blocks = [var.vpc2_cidr]
+    }
   }
 }
 
@@ -341,6 +348,14 @@ module "eks_cluster2" {
       to_port     = 0
       type        = "ingress"
       self        = true
+    }
+    ingress_from_cluster1_vpc = {
+      description = "Allow VXLAN traffic from Cluster 1 VPC CIDR"
+      protocol    = "udp"
+      from_port   = 4789
+      to_port     = 4789
+      type        = "ingress"
+      cidr_blocks = [var.vpc1_cidr]
     }
   }
 }

@@ -76,7 +76,7 @@ Check the status of Calico in your EKS cluster:
 kubectl get tigerastatus
 ```
 
-### Step 2: Link Your EKS Cluster to Calico Cloud
+## Step 2: Link Your EKS Cluster to Calico Cloud
 
 #### 1. Join the EKS Cluster to Calico Cloud
 Join your EKS cluster to [Calico Cloud](https://www.calicocloud.io/home) as illustrated:
@@ -89,12 +89,18 @@ Check the cluster status:
 kubectl get tigerastatus
 ```
 
-## Step 3: Configure Cluster Mesh for AWS Elastic Kubernetes Service
-
-#### 1. Update the Felix Configuration
+#### 3. Update the Felix Configuration
 Set the flow logs flush interval:
 ```sh
-kubectl patch felixconfiguration default --type='merge' -p '{
+kubectl --context iad patch felixconfiguration default --type='merge' -p '{
+  "spec": {
+    "dnsLogsFlushInterval": "15s",
+    "l7LogsFlushInterval": "15s",
+    "flowLogsFlushInterval": "15s",
+    "flowLogsFileAggregationKindForAllowed": 1
+  }
+}'
+kubectl --context pdx patch felixconfiguration default --type='merge' -p '{
   "spec": {
     "dnsLogsFlushInterval": "15s",
     "l7LogsFlushInterval": "15s",
@@ -104,7 +110,9 @@ kubectl patch felixconfiguration default --type='merge' -p '{
 }'
 ```
 
-#### 2. Create the Cluster Mesh
+## Step 3: Cluster Mesh for AWS Elastic Kubernetes Service
+
+#### 1. Create the Cluster Mesh
 
 Run the [setup-mesh.sh](setup-mesh.sh) script:
 ```sh
@@ -151,7 +159,7 @@ kubectl --context pdx apply -f multi-cluster-rs-pdx.yaml
 kubectl --context pdx apply -f netshoot.yaml
 ```
 
-#### 2. Implement Calico Federated Services for Calico Cluster Mesh
+#### 3. Implement Calico Federated Services for Calico Cluster Mesh
 Test the configuration of each Service:
 
 ```sh
@@ -172,7 +180,7 @@ kubectl --context iad exec -it netshoot -- ping -c 1 multi-cluster-rs-iad
 kubectl --context iad exec -it netshoot -- ping -c 1 multi-cluster-rs-pdx
 ```
 
-#### 6. Cleanup
+#### 4. Cleanup
 
 To teardown and remove the resources created in this example:
 

@@ -52,8 +52,3 @@ variable "network_service_cidr" {
   description = "CNI service cidr"
   default     = "10.9.0.0/16"
 }
-
-variable "network_docker_bridge_cidr" {
-  description = "Docker bridge cidr"
-  default     = "172.17.0.1/16"
-}

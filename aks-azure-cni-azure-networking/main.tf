@@ -1,9 +1,7 @@
 terraform {
-  required_version = ">= 1.2.9"
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 3.21.1"
     }
   }
 }
@@ -67,7 +65,6 @@ resource "azurerm_kubernetes_cluster" "aks" {
     network_plugin     = "azure"
     service_cidr       = var.network_service_cidr
     dns_service_ip     = var.network_dns_service_ip
-    docker_bridge_cidr = var.network_docker_bridge_cidr
   }
 }
 

@@ -106,7 +106,7 @@ kubectl patch felixconfiguration default --type='merge' -p '{
 
 #### 2. Create the Cluster Mesh
 
-Run the `[setup-mesh.sh](setup-mesh.sh)` script:
+Run the [setup-mesh.sh](setup-mesh.sh) script:
 ```sh
 cd ..
 sh setup-mesh.sh

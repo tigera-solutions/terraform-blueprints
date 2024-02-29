@@ -106,7 +106,7 @@ kubectl patch felixconfiguration default --type='merge' -p '{
 
 #### 2. Create the Cluster Mesh
 
-Run the `setup-mesh.sh` script:
+Run the `[setup-mesh.sh](setup-mesh.sh)` script:
 ```sh
 cd ..
 sh setup-mesh.sh
@@ -124,33 +124,6 @@ The `setup-mesh.sh` script automates the creation of a Calico cluster mesh as ou
    - Creates a secret that includes the kubeconfig from the source cluster. This enables the destination cluster to securely communicate with the source cluster.
    - Configures a `RemoteClusterConfiguration` resource, which is used to manage the mesh connection settings and policies.
    - Applies specific RBAC roles and role bindings to allow designated components access to the secret, ensuring they can establish and maintain secure cross-cluster communication.
-
-```sh
-Setting up mesh between iad and pdx...
-Switched to context "iad".
-serviceaccount/tigera-federation-remote-cluster created
-clusterrole.rbac.authorization.k8s.io/tigera-federation-remote-cluster created
-clusterrolebinding.rbac.authorization.k8s.io/tigera-federation-remote-cluster created
-secret/tigera-federation-remote-cluster created
-secret/pdx-secret created
-remoteclusterconfiguration.projectcalico.org/pdx created
-Switched to context "pdx".
-role.rbac.authorization.k8s.io/remote-cluster-secret-access created
-rolebinding.rbac.authorization.k8s.io/remote-cluster-secret-access created
-Mesh setup from iad to pdx completed
-Setting up mesh between pdx and iad...
-Switched to context "pdx".
-serviceaccount/tigera-federation-remote-cluster created
-clusterrole.rbac.authorization.k8s.io/tigera-federation-remote-cluster created
-clusterrolebinding.rbac.authorization.k8s.io/tigera-federation-remote-cluster created
-secret/tigera-federation-remote-cluster created
-secret/iad-secret created
-remoteclusterconfiguration.projectcalico.org/iad created
-Switched to context "iad".
-role.rbac.authorization.k8s.io/remote-cluster-secret-access created
-rolebinding.rbac.authorization.k8s.io/remote-cluster-secret-access created
-Mesh setup from pdx to iad completed
-```
 
 ## Validate the Deployment and Review the Results
 

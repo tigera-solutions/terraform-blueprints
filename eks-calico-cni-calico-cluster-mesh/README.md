@@ -62,15 +62,6 @@ terraform apply
 
 Enter `yes` at command prompt to apply
 
-To provision this example on ARM based compute:
-
-```sh
-terraform init
-terraform apply --auto-approve --var instance_type="m7g.2xlarge" --var ami_type="AL2_ARM_64"
-```
-
-Enter `yes` at command prompt to apply
-
 #### 5. Update Kubernetes Configuration
 Update your kubeconfig with the EKS cluster credentials as indicated in the Terraform output:
 
@@ -114,6 +105,20 @@ kubectl patch felixconfiguration default --type='merge' -p '{
 ```
 
 #### 2. Create the Cluster Mesh
+
+The `setup-mesh.sh` script automates the creation of a Calico cluster mesh as outlined in the [Tigera documentation](https://docs.tigera.io/calico-cloud/multicluster/overview), enabling secure and efficient connections between multiple Kubernetes clusters. Below is a breakdown of the specific Kubernetes resources it creates and configures:
+
+1. **In the source cluster**, it:
+   - Applies Calico federation manifests to install federation roles, rolebindings, and a service account needed for cross-cluster communication.
+   - Creates a secret that stores the service account token. This token ensures secure connections between clusters by providing authentication and authorization.
+
+2. **Generates a kubeconfig file** using the service account token. This file contains all necessary details (like the cluster API server address and credentials) for secure access to the source cluster.
+
+3. **In the destination cluster**, it:
+   - Creates a secret that includes the kubeconfig from the source cluster. This enables the destination cluster to securely communicate with the source cluster.
+   - Configures a `RemoteClusterConfiguration` resource, which is used to manage the mesh connection settings and policies.
+   - Applies specific RBAC roles and role bindings to allow designated components access to the secret, ensuring they can establish and maintain secure cross-cluster communication.
+
 Run the `setup-mesh.sh` script:
 ```sh
 cd ..
